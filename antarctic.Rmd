@@ -1,0 +1,119 @@
+---
+title: DRAFT - The Antarctic/Southern Ocean rOpenSci community
+output:
+  md_document:
+    variant: markdown_github
+---
+
+
+### Antarctic/Southern Ocean science and rOpenSci
+
+Collaboration and reproducibility are [fundamental to Antarctic and Southern Ocean science](https://doi.org/10.1038/d41586-018-05369-6), and the value of data to Antarctic science has long been promoted.
+The [Antarctic Treaty](https://www.ats.aq/e/ats.htm) (which came into force in 1961) included the provision that scientific observations and results from Antarctica should be openly shared.
+The high cost and difficulty of acquisition means that data tend to be re-used for different studies once collected. Further, there are many common data requirement themes (e.g. sea ice information is useful to a wide range of activities, from voyage planning through to ecosystem modelling).
+Support for Antarctic data management is well established. The SCAR-COMNAP Joint Committee on Antarctic Data Management was established in 1997 and remains active (as a SCAR Standing Commitee)[https://www.scar.org/data-products/scadm/] today.
+
+Software development to support Antarctic data usage is growing, but still lags the available data, and some common tasks are still more difficult than we would like.
+Starting in late 2017, the [Scientific Committee on Antarctic Research](https://www.scar.org/) has been collaborating with rOpenSci to build the Antarctic and Southern Ocean R/science communities. Our focus is on data and tasks that are common or even unique to Antarctic and Southern Ocean science, including supporting the development of R packages to meet Antarctic science needs, guides for R users and developers, active fora for open discussions, and strengthening connections with the broader science world.
+
+
+### First steps
+
+- a couple of packages have been [formally](https://github.com/ropensci/antanym) [onboarded](https://github.com/ropensci/bowerbird)
+- plethora of [in-development packages and supporting code](https://github.com/SCAR/antarctic-r-packages)
+- some through formal SCAR groups, individual researchers or their institutions, other SO science/policy groups such as CCAMLR
+- three common tasks:
+  - getting hold of data. Environmental data are commonly needed, and often come from satellite, model, or similar sources (or large data collections)
+  - processing those data to suit my study interests, often merging with field or other data
+  - mapping
+
+- demo below
+
+
+### Get involved
+
+Please get involved! Beyond the common rOpenSci channels ([Twitter feed](https://twitter.com/rOpenSci), [blog](https://ropensci.org/blog/), [discussion forum](https://discuss.ropensci.org/)):
+
+- contribute an Antarctic R package, or improve the documentation or code of an existing one. See the draft [Antarctic R package list](https://github.com/SCAR/antarctic-r-packages) as a starting point
+
+- contribute your Antarctic R knowledge, as a [code snippet](https://github.com/SCAR/rtools) or [tutorial](https://ropensci.org/tutorials/)
+
+- join the developer #antarctic slack channel
+
+- make [a suggestion](https://github.com/SCAR/ropensci/issues)
+
+
+### Demo
+
+Let's say that we have some points of interest in the Southern Ocean --- perhaps a ship track, or some stations where we took marine samples, or as we'll use here, the [track of an elephant seal track](http://www.meop.net/) as it moves from the Kerguelen Islands to Antarctica and back again (Data from IMOS 2018, provided as part of the `bsam` package).
+
+```{r get_track_data}
+library(bsam)
+library(dplyr)
+x <- ellie %>% dplyr::filter(id == "ct96-05-13")
+with(x, plot(lon, lat))
+```
+
+#### Fetching our environmental data
+
+Blurb about bowerbird/blueant.
+
+```{r eval = FALSE}
+library(remotes)
+install_github("AustralianAntarcticDivision/blueant")
+```
+
+Where we store data.
+
+```{r echo = FALSE}
+## in the background, use a persistent data dir so we don't endlessly re-download the data
+my_data_dir <- "c:/temp/data"
+```
+
+```{r set_data_dir, eval = FALSE}
+my_data_dir <- tempdir()
+```
+
+Focus on two sources of environmental data: sea ice and water depth. Note that water depth does not change (it's a static layer) but sea ice is highly dynamic, so we want to know what the ice conditions are like on a day-to-day basis.
+
+Sea ice, daily data from 2013 only. Bathy = ETOPO2, somewhat dated and low resolution compared to more recent data, but small dataset for demo purposes.
+
+```{r get_env_data, eval = FALSE}
+library(blueant)
+src <- bind_rows(
+    sources("NSIDC SMMR-SSM/I Nasateam sea ice concentration", hemisphere = "south", time_resolutions = "day", years = 2013),
+    sources("ETOPO2 bathymetry"))
+result <- bb_get(src, local_file_root = my_data_dir, clobber = 0, verbose = TRUE, confirm = NULL)
+```
+
+
+```{r really_get_env_data, echo = FALSE, message = FALSE, cache = TRUE}
+## code not shown in output: capture the output and trim it down a bit
+library(blueant)
+src <- bind_rows(
+    sources("NSIDC SMMR-SSM/I Nasateam sea ice concentration", hemisphere = "south", time_resolutions = "day", years = 2013),
+    sources("ETOPO2 bathymetry"))
+op <- capture.output(result <- bb_get(src, local_file_root = my_data_dir, clobber = 0, verbose = TRUE, confirm = NULL))
+op[4] <- ""
+op[5] <- " [... output truncated]"
+for (oo in op[1:5]) cat(oo, "\n")
+```
+
+So now we have local copies of those data. If you want to see which files were downloaded and where they are stored locally, see the `files` component of the `result` object, e.g. for the bathymetric data:
+
+```{r}
+result$files[[2]]$file
+```
+
+But we'd really rather like to avoid having to manually code file-by-file operations in order to work with our data.
+
+### raadtools
+
+
+
+### References
+
+IMOS (2018) AATAMS Facility - Satellite Relay Tagging Program - Delayed mode data, https://catalogue-imos.aodn.org.au/geonetwork/srv/en/metadata.show?uuid=06b09398-d3d0-47dc-a54a-a745319fbece
+
+
+
