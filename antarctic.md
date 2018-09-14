@@ -4,7 +4,7 @@ Collaboration and reproducibility are [fundamental to Antarctic and Southern Oce
 
 Software development to support Antarctic data usage is growing, but still lags the available data, and some common tasks are still more difficult than we would like. Starting in late 2017, the [Scientific Committee on Antarctic Research](https://www.scar.org/) has been collaborating with rOpenSci to build the Antarctic and Southern Ocean R/science communities. Our focus is on data and tasks that are common or even unique to Antarctic and Southern Ocean science, including supporting the development of R packages to meet Antarctic science needs, guides for R users and developers, active fora for open discussions, and strengthening connections with the broader science world.
 
-### First steps
+### First steps in building the community
 
 -   a couple of packages have been [formally](https://github.com/ropensci/antanym) [onboarded](https://github.com/ropensci/bowerbird)
 -   plethora of [in-development packages and supporting code](https://github.com/SCAR/antarctic-r-packages)
@@ -34,68 +34,24 @@ Let's say that we have some points of interest in the Southern Ocean --- perhaps
 
 ``` r
 library(bsam)
-```
-
-    ## Warning: package 'bsam' was built under R version 3.4.4
-
-    ## Loading required package: rjags
-
-    ## Warning: package 'rjags' was built under R version 3.4.2
-
-    ## Loading required package: coda
-
-    ## Warning: package 'coda' was built under R version 3.4.2
-
-    ## Linked to JAGS 4.2.0
-
-    ## Loaded modules: basemod,bugs
-
-    ## 
-    ## Attaching package: 'bsam'
-
-    ## The following object is masked from 'package:stats':
-    ## 
-    ##     simulate
-
-``` r
 library(dplyr)
-```
-
-    ## Warning: package 'dplyr' was built under R version 3.4.4
-
-    ## 
-    ## Attaching package: 'dplyr'
-
-    ## The following objects are masked from 'package:stats':
-    ## 
-    ##     filter, lag
-
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     intersect, setdiff, setequal, union
-
-``` r
+library(ggplot2)
 x <- ellie %>% dplyr::filter(id == "ct96-05-13")
-```
-
-    ## Warning: package 'bindrcpp' was built under R version 3.4.4
-
-``` r
 with(x, plot(lon, lat))
 ```
 
-![](antarctic_files/figure-markdown_github/get_track_data-1.png)
+<img src="antarctic_files/figure-markdown_github/get_track_data-1.png" style="display: block; margin: auto;" />
 
 #### Fetching our environmental data
 
-Blurb about bowerbird/blueant.
+Blurb about bowerbird/blueant. Dynamic extractions of data from external sources works in some cases, but many analyses use data from heterogeneous sources (in which case there may not be dynamic extraction tools for all of them), the analyses are essentially dependent on having fast (computationally intensive) access to large data sets, or a common suite of data are routinely used by a local research community. In these cases, maintaining a local copy of a range of data from third-party providers can be extremely beneficial, especially if that collection is hosted with a fast connection to local compute resources (virtual machines or high-performance computational facilities).
 
 ``` r
 library(remotes)
 install_github("AustralianAntarcticDivision/blueant")
 ```
 
-Where we store data.
+Where we store data. Would normally choose a persistent location, here use temp dir.
 
 ``` r
 my_data_dir <- tempdir()
@@ -114,24 +70,71 @@ result <- bb_get(src, local_file_root = my_data_dir, clobber = 0, verbose = TRUE
 ```
 
     ##  
-    ## Thu Sep 06 07:16:04 2018 
+    ## Fri Sep 14 01:24:19 2018 
     ## Synchronizing dataset: NSIDC SMMR-SSM/I Nasateam sea ice concentration 
     ##  
     ##  [... output truncated]
 
-So now we have local copies of those data. If you want to see which files were downloaded and where they are stored locally, see the `files` component of the `result` object, e.g. for the bathymetric data:
+So now we have local copies of those data files. The sync can be run daily so that the local collection is always up to date.
+
+Details of the files can be found in the `result` object, and those files can now be read with packages such as `raster`. But we'd really rather like to avoid having to manually code file-by-file operations in order to work with our data.
+
+#### Using those environmental data: raadtools
+
+Very common to deal with satellite, model, or other environmental data. Such data are typically spatial or spatio-temporal, may also have depth strata. `raadtools` is suite of functions that provide consistent access to a range of data, and tools for working with those data.
 
 ``` r
-result$files[[2]]$file
+install_github("AustralianAntarcticDivision/raadtools")
 ```
 
-    ## [1] "c:\\temp\\data\\www.ngdc.noaa.gov\\mgg\\global\\relief\\ETOPO2\\ETOPO2v2-2006\\ETOPO2v2c\\ETOPO2v2c_ReadMe.txt"           
-    ## [2] "c:\\temp\\data\\www.ngdc.noaa.gov\\mgg\\global\\relief\\ETOPO2\\ETOPO2v2-2006\\ETOPO2v2c\\netCDF\\ETOPO2v2c_f4_netCDF.zip"
-    ## [3] "c:/temp/data/www.ngdc.noaa.gov/mgg/global/relief/ETOPO2/ETOPO2v2-2006/ETOPO2v2c/netCDF/ETOPO2v2c_f4.nc"
+More installation instructions here, including file lists when installed on your own machine.
 
-But we'd really rather like to avoid having to manually code file-by-file operations in order to work with our data.
+``` r
+library(raadtools)
 
-### raadtools
+## set our data dir so that raadtools knows where to find our collection
+options(default.datadir = my_data_dir)
+```
+
+Define our spatial region of interest and get bathy data from the files we just downloaded:
+
+``` r
+roi <- round(c(range(x$lon), range(x$lat)) + c(-2, 2, -2, 2))
+bx <- readtopo("etopo2", xylim = roi)
+```
+
+And so a marginally more informative plot of our track, showing the bathymetry:
+
+``` r
+plot(bx)
+lines(x$lon, x$lat)
+```
+
+<img src="antarctic_files/figure-markdown_github/unnamed-chunk-7-1.png" style="display: block; margin: auto;" />
+
+Extract depth values along track, and plot the histogram of values:
+
+``` r
+x$depth <- extract(readtopo, x[, c("lon", "lat")], topo = "etopo2")
+ggplot(x, aes(depth)) + geom_histogram(bins = 100) + theme_bw()
+```
+
+<img src="antarctic_files/figure-markdown_github/unnamed-chunk-8-1.png" style="display: block; margin: auto;" />
+
+Can also extract time-varying data, e.g. match our track to sea ice data on the basis of each track point's location and time:
+
+``` r
+x$ice <- extract(readice, x[, c("lon", "lat", "date")])
+ggplot(x, aes(depth, ice, colour = lat)) + geom_point() + theme_bw()
+```
+
+    ## Warning: Removed 44 rows containing missing values (geom_point).
+
+<img src="antarctic_files/figure-markdown_github/unnamed-chunk-9-1.png" style="display: block; margin: auto;" />
+
+#### Mapping
+
+Polar stereo. Coastlines, areas or features of interest, place names. `mapso`, `antanym`, etc
 
 ### References
 

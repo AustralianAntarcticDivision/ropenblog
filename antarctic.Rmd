@@ -5,6 +5,10 @@ output:
     variant: markdown_github
 ---
 
+```{r chunkopts, eval = TRUE, echo = FALSE}
+knitr::opts_chunk$set(eval = TRUE, echo = TRUE, message = TRUE, warning = TRUE, tidy = FALSE, cache = TRUE, include = TRUE, dpi = 72, fig.width = 9, fig.height = 6, fig.align = "center", results = "markup")
+```
+
 
 ### Antarctic/Southern Ocean science and rOpenSci
 
@@ -17,7 +21,7 @@ Software development to support Antarctic data usage is growing, but still lags 
 Starting in late 2017, the [Scientific Committee on Antarctic Research](https://www.scar.org/) has been collaborating with rOpenSci to build the Antarctic and Southern Ocean R/science communities. Our focus is on data and tasks that are common or even unique to Antarctic and Southern Ocean science, including supporting the development of R packages to meet Antarctic science needs, guides for R users and developers, active fora for open discussions, and strengthening connections with the broader science world.
 
 
-### First steps
+### First steps in building the community
 
 - a couple of packages have been [formally](https://github.com/ropensci/antanym) [onboarded](https://github.com/ropensci/bowerbird)
 - plethora of [in-development packages and supporting code](https://github.com/SCAR/antarctic-r-packages)
@@ -47,23 +51,24 @@ Please get involved! Beyond the common rOpenSci channels ([Twitter feed](https:/
 
 Let's say that we have some points of interest in the Southern Ocean --- perhaps a ship track, or some stations where we took marine samples, or as we'll use here, the [track of an elephant seal track](http://www.meop.net/) as it moves from the Kerguelen Islands to Antarctica and back again (Data from IMOS 2018, provided as part of the `bsam` package).
 
-```{r get_track_data}
+```{r get_track_data, message = FALSE, warning = FALSE}
 library(bsam)
 library(dplyr)
+library(ggplot2)
 x <- ellie %>% dplyr::filter(id == "ct96-05-13")
 with(x, plot(lon, lat))
 ```
 
 #### Fetching our environmental data
 
-Blurb about bowerbird/blueant.
+Blurb about bowerbird/blueant. Dynamic extractions of data from external sources works in some cases, but many analyses use data from heterogeneous sources (in which case there may not be dynamic extraction tools for all of them), the analyses are essentially dependent on having fast (computationally intensive) access to large data sets, or a common suite of data are routinely used by a local research community. In these cases, maintaining a local copy of a range of data from third-party providers can be extremely beneficial, especially if that collection is hosted with a fast connection to local compute resources (virtual machines or high-performance computational facilities).
 
 ```{r eval = FALSE}
 library(remotes)
 install_github("AustralianAntarcticDivision/blueant")
 ```
 
-Where we store data.
+Where we store data. Would normally choose a persistent location, here use temp dir.
 
 ```{r echo = FALSE}
 ## in the background, use a persistent data dir so we don't endlessly re-download the data
@@ -99,16 +104,63 @@ op[5] <- " [... output truncated]"
 for (oo in op[1:5]) cat(oo, "\n")
 ```
 
-So now we have local copies of those data. If you want to see which files were downloaded and where they are stored locally, see the `files` component of the `result` object, e.g. for the bathymetric data:
+So now we have local copies of those data files. The sync can be run daily so that the local collection is always up to date.
 
-```{r}
-result$files[[2]]$file
+Details of the files can be found in the `result` object, and those files can now be read with packages such as `raster`. But we'd really rather like to avoid having to manually code file-by-file operations in order to work with our data.
+
+#### Using those environmental data: raadtools
+
+Very common to deal with satellite, model, or other environmental data. Such data are typically spatial or spatio-temporal, may also have depth strata. `raadtools` is suite of functions that provide consistent access to a range of data, and tools for working with those data.
+
+```{r eval = FALSE}
+install_github("AustralianAntarcticDivision/raadtools")
 ```
 
-But we'd really rather like to avoid having to manually code file-by-file operations in order to work with our data.
+More installation instructions here, including file lists when installed on your own machine.
 
-### raadtools
+```{r echo = FALSE, message = FALSE, warning= FALSE}
+library(raadtools)
+## don't set default.datadir
+```
 
+```{r eval = FALSE}
+library(raadtools)
+
+## set our data dir so that raadtools knows where to find our collection
+options(default.datadir = my_data_dir)
+```
+
+Define our spatial region of interest and get bathy data from the files we just downloaded:
+
+```{r}
+roi <- round(c(range(x$lon), range(x$lat)) + c(-2, 2, -2, 2))
+bx <- readtopo("etopo2", xylim = roi)
+```
+
+And so a marginally more informative plot of our track, showing the bathymetry:
+
+```{r}
+plot(bx)
+lines(x$lon, x$lat)
+```
+
+Extract depth values along track, and plot the histogram of values:
+
+```{r}
+x$depth <- extract(readtopo, x[, c("lon", "lat")], topo = "etopo2")
+ggplot(x, aes(depth)) + geom_histogram(bins = 100) + theme_bw()
+```
+
+Can also extract time-varying data, e.g. match our track to sea ice data on the basis of each track point's location and time:
+
+```{r}
+x$ice <- extract(readice, x[, c("lon", "lat", "date")])
+ggplot(x, aes(depth, ice, colour = lat)) + geom_point() + theme_bw()
+```
+
+#### Mapping
+
+Polar stereo. Coastlines, areas or features of interest, place names. `mapso`, `antanym`, etc
 
 
 ### References
