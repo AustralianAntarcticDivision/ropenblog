@@ -52,16 +52,20 @@ Please get involved! Beyond the common rOpenSci channels ([Twitter feed](https:/
 Let's say that we have some points of interest in the Southern Ocean --- perhaps a ship track, or some stations where we took marine samples, or as we'll use here, the [track of an elephant seal track](http://www.meop.net/) as it moves from the Kerguelen Islands to Antarctica and back again (Data from IMOS 2018, provided as part of the `bsam` package).
 
 ```{r get_track_data, message = FALSE, warning = FALSE}
-library(bsam)
+if (!requireNamespace("bsam", quietly = TRUE)) stop("need to install.packages(\"bsam\") for the example data")
 library(dplyr)
 library(ggplot2)
+
+data("ellie", package = "bsam")
 x <- ellie %>% dplyr::filter(id == "ct96-05-13")
 with(x, plot(lon, lat))
 ```
 
 #### Fetching our environmental data
 
-Blurb about bowerbird/blueant. Dynamic extractions of data from external sources works in some cases, but many analyses use data from heterogeneous sources (in which case there may not be dynamic extraction tools for all of them), the analyses are essentially dependent on having fast (computationally intensive) access to large data sets, or a common suite of data are routinely used by a local research community. In these cases, maintaining a local copy of a range of data from third-party providers can be extremely beneficial, especially if that collection is hosted with a fast connection to local compute resources (virtual machines or high-performance computational facilities).
+Dynamic extractions of data from external sources works in some cases, but many analyses use data from heterogeneous sources (in which case there may not be dynamic extraction tools for all of them), the analyses are essentially dependent on having fast (computationally intensive) access to large data sets, or a common suite of data are routinely used by a local research community. In these cases, maintaining a local copy of a range of data from third-party providers can be extremely beneficial, especially if that collection is hosted with a fast connection to local compute resources (virtual machines or high-performance computational facilities).
+
+[bowerbird](https://github.com/AustralianAntarcticDivision/bowerbird) provides a framework for downloading data files to a local collection, and keeping it up to date. The companion [blueant](https://github.com/AustralianAntarcticDivision/blueant) package provides a suite of definitions for Southern Ocean and Antarctic data sources that can be used with bowerbird.
 
 ```{r eval = FALSE}
 library(remotes)
@@ -118,16 +122,11 @@ install_github("AustralianAntarcticDivision/raadtools")
 
 More installation instructions here, including file lists when installed on your own machine.
 
-```{r echo = FALSE, message = FALSE, warning= FALSE}
-library(raadtools)
-## don't set default.datadir
-```
-
-```{r eval = FALSE}
+```{r}
 library(raadtools)
 
 ## set our data dir so that raadtools knows where to find our collection
-options(default.datadir = my_data_dir)
+set_data_roots(my_data_dir)
 ```
 
 Define our spatial region of interest and get bathy data from the files we just downloaded:
