@@ -52,13 +52,12 @@ Please get involved! Beyond the common rOpenSci channels ([Twitter feed](https:/
 First load some packages for general use.
 ```{r pkgs, message = FALSE, warning = FALSE}
 ## make sure we have the packages we need
-req <- c("dplyr", "ggplot2", "bsam", "remotes")
-req <- req[sapply(req, requireNamespace, quietly = TRUE)]
+req <- setdiff(c("dplyr", "ggplot2", "bsam", "remotes"), installed.packages())
 if (length(req) > 0) install.packages(req)
 
 ## and some github packages
 req <- c("AustralianAntarcticDivision/blueant", "AustralianAntarcticDivision/raadtools")
-req <- req[sapply(basename(req), requireNamespace, quietly = TRUE)]
+req <- setdiff(basename(req), installed.packages())
 if (length(req) > 0) remotes::install_github(req)
 ```
 
