@@ -49,10 +49,22 @@ Please get involved! Beyond the common rOpenSci channels ([Twitter feed](https:/
 
 ### Demo
 
+First load some packages for general use.
+```{r pkgs, message = FALSE, warning = FALSE}
+## make sure we have the packages we need
+req <- c("dplyr", "ggplot2", "bsam", "remotes")
+req <- req[sapply(req, requireNamespace, quietly = TRUE)]
+if (length(req) > 0) install.packages(req)
+
+## and some github packages
+req <- c("AustralianAntarcticDivision/blueant", "AustralianAntarcticDivision/raadtools")
+req <- req[sapply(basename(req), requireNamespace, quietly = TRUE)]
+if (length(req) > 0) remotes::install_github(req)
+```
+
 Let's say that we have some points of interest in the Southern Ocean --- perhaps a ship track, or some stations where we took marine samples, or as we'll use here, the [track of an elephant seal track](http://www.meop.net/) as it moves from the Kerguelen Islands to Antarctica and back again (Data from IMOS 2018, provided as part of the `bsam` package).
 
 ```{r get_track_data, message = FALSE, warning = FALSE}
-if (!requireNamespace("bsam", quietly = TRUE)) stop("need to install.packages(\"bsam\") for the example data")
 library(dplyr)
 library(ggplot2)
 
@@ -125,7 +137,7 @@ More installation instructions here, including file lists when installed on your
 ```{r}
 library(raadtools)
 
-## set our data dir so that raadtools knows where to find our collection
+## tell raadtools where our data collection has been stored
 set_data_roots(my_data_dir)
 ```
 
