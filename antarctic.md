@@ -30,12 +30,26 @@ Please get involved! Beyond the common rOpenSci channels ([Twitter feed](https:/
 
 ### Demo
 
+First load some packages for general use.
+
+``` r
+## make sure we have the packages we need
+req <- setdiff(c("dplyr", "ggplot2", "bsam", "remotes"), installed.packages())
+if (length(req) > 0) install.packages(req)
+
+## and some github packages
+req <- c("AustralianAntarcticDivision/blueant", "AustralianAntarcticDivision/raadtools", "Maschette/SOmap")
+req <- setdiff(basename(req), installed.packages())
+if (length(req) > 0) remotes::install_github(req)
+```
+
 Let's say that we have some points of interest in the Southern Ocean --- perhaps a ship track, or some stations where we took marine samples, or as we'll use here, the [track of an elephant seal track](http://www.meop.net/) as it moves from the Kerguelen Islands to Antarctica and back again (Data from IMOS 2018, provided as part of the `bsam` package).
 
 ``` r
-library(bsam)
 library(dplyr)
 library(ggplot2)
+
+data("ellie", package = "bsam")
 x <- ellie %>% dplyr::filter(id == "ct96-05-13")
 with(x, plot(lon, lat))
 ```
@@ -44,7 +58,9 @@ with(x, plot(lon, lat))
 
 #### Fetching our environmental data
 
-Blurb about bowerbird/blueant. Dynamic extractions of data from external sources works in some cases, but many analyses use data from heterogeneous sources (in which case there may not be dynamic extraction tools for all of them), the analyses are essentially dependent on having fast (computationally intensive) access to large data sets, or a common suite of data are routinely used by a local research community. In these cases, maintaining a local copy of a range of data from third-party providers can be extremely beneficial, especially if that collection is hosted with a fast connection to local compute resources (virtual machines or high-performance computational facilities).
+Dynamic extractions of data from external sources works in some cases, but many analyses use data from heterogeneous sources (in which case there may not be dynamic extraction tools for all of them), the analyses are essentially dependent on having fast (computationally intensive) access to large data sets, or a common suite of data are routinely used by a local research community. In these cases, maintaining a local copy of a range of data from third-party providers can be extremely beneficial, especially if that collection is hosted with a fast connection to local compute resources (virtual machines or high-performance computational facilities).
+
+[bowerbird](https://github.com/AustralianAntarcticDivision/bowerbird) provides a framework for downloading data files to a local collection, and keeping it up to date. The companion [blueant](https://github.com/AustralianAntarcticDivision/blueant) package provides a suite of definitions for Southern Ocean and Antarctic data sources that can be used with bowerbird.
 
 ``` r
 library(remotes)
@@ -84,17 +100,14 @@ Details of the files can be found in the `result` object, and those files can no
 Very common to deal with satellite, model, or other environmental data. Such data are typically spatial or spatio-temporal, may also have depth strata. `raadtools` is suite of functions that provide consistent access to a range of data, and tools for working with those data.
 
 ``` r
-install_github("AustralianAntarcticDivision/raadtools")
-```
-
-More installation instructions here, including file lists when installed on your own machine.
-
-``` r
 library(raadtools)
 
-## set our data dir so that raadtools knows where to find our collection
-options(default.datadir = my_data_dir)
+## tell raadtools where our data collection has been stored
+set_data_roots(my_data_dir)
 ```
+
+    ## global option 'raadfiles.data.roots' set:
+    ## 'c:/temp/data'
 
 Define our spatial region of interest and get bathy data from the files we just downloaded:
 
@@ -110,7 +123,7 @@ plot(bx)
 lines(x$lon, x$lat)
 ```
 
-<img src="antarctic_files/figure-markdown_github/unnamed-chunk-7-1.png" style="display: block; margin: auto;" />
+<img src="antarctic_files/figure-markdown_github/unnamed-chunk-5-1.png" style="display: block; margin: auto;" />
 
 Extract depth values along track, and plot the histogram of values:
 
@@ -119,7 +132,7 @@ x$depth <- extract(readtopo, x[, c("lon", "lat")], topo = "etopo2")
 ggplot(x, aes(depth)) + geom_histogram(bins = 100) + theme_bw()
 ```
 
-<img src="antarctic_files/figure-markdown_github/unnamed-chunk-8-1.png" style="display: block; margin: auto;" />
+<img src="antarctic_files/figure-markdown_github/unnamed-chunk-6-1.png" style="display: block; margin: auto;" />
 
 Can also extract time-varying data, e.g. match our track to sea ice data on the basis of each track point's location and time:
 
@@ -130,11 +143,38 @@ ggplot(x, aes(depth, ice, colour = lat)) + geom_point() + theme_bw()
 
     ## Warning: Removed 44 rows containing missing values (geom_point).
 
-<img src="antarctic_files/figure-markdown_github/unnamed-chunk-9-1.png" style="display: block; margin: auto;" />
+<img src="antarctic_files/figure-markdown_github/unnamed-chunk-7-1.png" style="display: block; margin: auto;" />
 
 #### Mapping
 
 Polar stereo. Coastlines, areas or features of interest, place names. `mapso`, `antanym`, etc
+
+``` r
+library(SOmap)
+default_somap(x$lon, x$lat)
+```
+
+<img src="antarctic_files/figure-markdown_github/somap1-1.png" style="display: block; margin: auto;" />
+
+Or a full-hemisphere map:
+
+``` r
+library(sp)
+library(raster)
+xsp <- x
+coordinates(xsp) <- c("lon", "lat")
+projection(xsp) <- "+proj=longlat +ellps=WGS84"
+xsp <- spTransform(xsp, CRS("+proj=stere +lat_0=-90 +lat_ts=-71 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0"))
+SOmap()
+```
+
+    ## [1] "Congratulations, you did a thing!"
+
+``` r
+plot(xsp, add = TRUE)
+```
+
+<img src="antarctic_files/figure-markdown_github/somap2-1.png" style="display: block; margin: auto;" />
 
 ### References
 
