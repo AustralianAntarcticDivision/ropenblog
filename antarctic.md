@@ -38,7 +38,7 @@ req <- setdiff(c("dplyr", "ggplot2", "bsam", "remotes"), installed.packages())
 if (length(req) > 0) install.packages(req)
 
 ## and some github packages
-req <- c("AustralianAntarcticDivision/blueant", "AustralianAntarcticDivision/raadtools", "Maschette/SOmap")
+req <- c("AustralianAntarcticDivision/blueant", "AustralianAntarcticDivision/raadtools", "Maschette/SOmap", "ropensci/antanym")
 req <- setdiff(basename(req), installed.packages())
 if (length(req) > 0) remotes::install_github(req)
 ```
@@ -175,6 +175,45 @@ plot(xsp, add = TRUE)
 ```
 
 <img src="antarctic_files/figure-markdown_github/somap2-1.png" style="display: block; margin: auto;" />
+
+#### Place names
+
+Labelling spatial features. No single naming authority. SCAR maintains a composite gazetteer, available via `antanym`.
+
+``` r
+library(antanym)
+
+## read the names data
+xn <- an_read(cache = "session", sp = TRUE)
+
+## This is a composite gazetteer, so it has multiple names for features that have been named by more than
+##  one country. We can resolve back to one name per feature, preferentially choosing the
+##  UK name if there is one:
+
+xn <- an_preferred(xn, origin = "United Kingdom")
+```
+
+There are a lot of named features in the Antarctic, which ones should we show? Let's ask antanym for suggestions as to which names should be shown on this map
+
+``` r
+xns <- an_suggest(xn, map_scale = 20e6, map_extent = c(-180, 180, -90, -40))
+
+## transform to our map projection and take the first 10 names
+temp <- as_tibble(spTransform(xns, projection(Bathy))) %>% head(10)
+
+## add them to the map
+SOmap()
+```
+
+    ## [1] "Congratulations, you did a thing!"
+
+``` r
+plot(xsp, add = TRUE)
+with(temp, points(x = longitude, y= latitude, pch = 16))
+with(temp, text(x = longitude, y= latitude, labels = place_name, pos = 2 + 2*(longitude > 0)))
+```
+
+<img src="antarctic_files/figure-markdown_github/antanym2-1.png" style="display: block; margin: auto;" />
 
 ### References
 
