@@ -147,7 +147,7 @@ ggplot(x, aes(depth, ice, colour = lat)) + geom_point() + theme_bw()
 
 #### Mapping
 
-Polar stereo. Coastlines, areas or features of interest, place names. `mapso`, `antanym`, etc
+Polar stereo. Coastlines, areas or features of interest, place names.
 
 ``` r
 library(SOmap)
