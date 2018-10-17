@@ -228,3 +228,5 @@ with(temp, text(x = longitude, y= latitude, labels = place_name, pos = 2 + 2*(lo
 ### References
 
 IMOS (2018) AATAMS Facility - Satellite Relay Tagging Program - Delayed mode data, <https://catalogue-imos.aodn.org.au/geonetwork/srv/en/metadata.show?uuid=06b09398-d3d0-47dc-a54a-a745319fbece>
+
+Composite Gazetteer of Antarctica, Scientific Committee on Antarctic Research. GCMD Metadata (<http://gcmd.nasa.gov/records/SCAR_Gazetteer.html>)
