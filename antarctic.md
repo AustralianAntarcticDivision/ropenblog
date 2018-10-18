@@ -10,10 +10,9 @@ Our initial efforts have focused on two things:
 
 1.  compiling a list of existing resources likely to be useful to the community: see the work-in-progress [task view](https://github.com/SCAR/antarctic-r-packages)
 2.  improving core functionality centred around three key tasks that many researchers find problematic:
-
--   getting hold of data. Environmental data are commonly needed, and often come from satellite, model, or similar sources (or large data collections)
--   processing those data to suit particular study interests, such as subsetting or merging with field or other data
--   producing maps for exploratory analyses or publications.
+    -   getting hold of data. Environmental data are commonly needed, and often come from satellite, model, or similar sources (or large data collections)
+    -   processing those data to suit particular study interests, such as subsetting or merging with field or other data
+    -   producing maps for exploratory analyses or publications.
 
 A couple of packages have been [formally](https://github.com/ropensci/antanym) [onboarded](https://github.com/ropensci/bowerbird) into ropensci, with others in development. Example usage of a few of these packages is demonstrated below.
 
