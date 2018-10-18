@@ -165,11 +165,11 @@ ggplot(x, aes(date, ice, colour = lat)) + geom_path() + theme_bw()
 
 #### Mapping
 
-Creating maps is another very common requirement, and in the Southern Ocean brings a few challenges (e.g. dealing with the dateline when using polar-stereographic or similar projections). There are also spatial features that many users want to show (coastlines, oceanic fronts, extent of sea ice, place names, etc).
+Creating maps is another very common requirement, and in the Southern Ocean brings a few challenges (e.g. dealing with the dateline when using polar-stereographic or similar projections). There are also spatial features that many users want to show (coastlines, oceanic fronts, extent of sea ice, place names, etc). The in-development `SOmap` package aims to help with this.
 
 ``` r
 library(SOmap)
-default_somap(x$lon, x$lat)
+SOauto_map(x$lon, x$lat, mask = FALSE)
 ```
 
 <img src="antarctic_files/figure-markdown_github/somap1-1.png" style="display: block; margin: auto;" />
@@ -185,8 +185,10 @@ coordinates(xsp) <- c("lon", "lat")
 projection(xsp) <- "+proj=longlat +ellps=WGS84"
 xsp <- spTransform(xsp, CRS("+proj=stere +lat_0=-90 +lat_ts=-71 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0"))
 
-## plot the base map
-invisible(capture.output(SOmap()))
+## plot the base map with ocean fronts shown
+SOmap(fronts = TRUE)
+## add current marine protected areas
+SOmanagement(MPA = TRUE, mpacol = "darkblue")
 ## add our track
 plot(xsp, col = "darkgreen", add = TRUE)
 ```
@@ -208,7 +210,15 @@ There is no single naming authority for place names in Antarctica, and so there 
 xn <- an_preferred(xn, origin = "United Kingdom")
 ```
 
-There are a lot of named features in the Antarctic, and we can't show all of them on our map. Which ones should we show? Let's ask antanym for suggestions as to which names should be shown on this map
+How many place names do we have?
+
+``` r
+nrow(xn)
+```
+
+    ## [1] 19742
+
+OK, we can't show all of these --- which ones should we show? Let's ask antanym for suggestions as to which names should be shown on this map:
 
 ``` r
 xns <- an_suggest(xn, map_scale = 20e6, map_extent = c(-180, 180, -90, -40))
@@ -217,7 +227,7 @@ xns <- an_suggest(xn, map_scale = 20e6, map_extent = c(-180, 180, -90, -40))
 temp <- as_tibble(spTransform(xns, projection(Bathy))) %>% head(10)
 
 ## add them to the map
-invisible(capture.output(SOmap()))
+SOmap()
 plot(xsp, col = "darkgreen", add = TRUE)
 with(temp, points(x = longitude, y= latitude, pch = 16))
 with(temp, text(x = longitude, y= latitude, labels = place_name, pos = 2 + 2*(longitude > 0)))
