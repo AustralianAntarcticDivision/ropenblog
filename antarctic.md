@@ -60,8 +60,9 @@ with(x, plot(lon, lat))
 
 Very commonly, we want to know about the environmental conditions at our points of interest. For the remote and vast Southern Ocean these data typically come from satellite or models. Some data centres provide extraction tools that will pull out a subset of data to suit your requirements, but often it makes more sense to cache entire data collections locally first and then work with them from there:
 
--   many analyses need a diverse range of data (in which case there may not be dynamic extraction tools for all of them)
+-   many analyses make use of data from a variety of providers (in which case there may not be dynamic extraction tools for all of them)
 -   analyses might need to crunch through a whole collection of data in order to calculate appropriate statistics (temperature anomalies with respect to a long-term mean, for example)
+-   different parts of the same data set are used in different analyses, in which case making one copy of the whole thing may be easier to manage than having different subsets for different projects
 -   a common suite of data are routinely used by a local research community, in which case it makes more sense to keep a local copy for everyone to use, rather than multiple copies being downloaded by different individuals
 
 In these cases, maintaining a local copy of a range of data from third-party providers can be extremely beneficial, especially if that collection is hosted with a fast connection to local compute resources (virtual machines or high-performance computational facilities).
