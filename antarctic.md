@@ -28,9 +28,11 @@ Please get involved! Beyond the common rOpenSci channels ([Twitter feed](https:/
 
 -   make [a suggestion](https://github.com/SCAR/ropensci/issues).
 
+------------------------------------------------------------------------
+
 ### Demo
 
-First load some packages for general use.
+First install some packages, if needed.
 
 ``` r
 ## make sure we have the packages we need
