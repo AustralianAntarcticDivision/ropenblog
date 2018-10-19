@@ -37,13 +37,13 @@ A couple of packages have been [formally](https://github.com/ropensci/antanym) [
 
 Please get involved! Beyond the common rOpenSci channels ([Twitter feed](https://twitter.com/rOpenSci), [blog](https://ropensci.org/blog/), [discussion forum](https://discuss.ropensci.org/)):
 
-- contribute an Antarctic R package, or improve the documentation or code of an existing one. See the draft [Antarctic R package list](https://github.com/SCAR/antarctic-r-packages) as a starting point
+- contribute an Antarctic R package, or improve the documentation or code of an existing one. See the draft [Antarctic R package list](https://github.com/SCAR/antarctic-r-packages) as a starting point,
 
-- contribute your Antarctic R knowledge, as a [code snippet](https://github.com/SCAR/rtools) or [tutorial](https://ropensci.org/tutorials/)
+- contribute your Antarctic R knowledge, as a [code snippet](https://github.com/SCAR/rtools) or [tutorial](https://ropensci.org/tutorials/),
 
-- join the developer #antarctic slack channel
+- join the developer #antarctic slack channel,
 
-- make [a suggestion](https://github.com/SCAR/ropensci/issues)
+- make [a suggestion](https://github.com/SCAR/ropensci/issues).
 
 
 ### Demo
@@ -51,36 +51,36 @@ Please get involved! Beyond the common rOpenSci channels ([Twitter feed](https:/
 First load some packages for general use.
 ```{r pkgs, message = FALSE, warning = FALSE}
 ## make sure we have the packages we need
-req <- setdiff(c("dplyr", "ggplot2", "bsam", "remotes"), installed.packages())
+req <- setdiff(c("dplyr", "ggplot2", "remotes"), installed.packages())
 if (length(req) > 0) install.packages(req)
 
 ## and some github packages
-req <- c("AustralianAntarcticDivision/blueant", "AustralianAntarcticDivision/raadtools", "Maschette/SOmap", "ropensci/antanym")
+req <- c("ropensci/antanym", "AustralianAntarcticDivision/blueant", "AustralianAntarcticDivision/raadtools", "Maschette/SOmap")
 req <- setdiff(basename(req), installed.packages())
 if (length(req) > 0) remotes::install_github(req)
 ```
 
-Let's say that we have some points of interest in the Southern Ocean --- perhaps a ship track, or some stations where we took marine samples, or as we'll use here, the [track of an elephant seal](http://www.meop.net/) as it moves from the Kerguelen Islands to Antarctica and back again (Data from IMOS 2018[^1], provided as part of the `bsam` package).
+Let's say that we have some points of interest in the Southern Ocean --- perhaps a ship track, or some stations where we took marine samples, or as we'll use here, the [track of an elephant seal](http://www.meop.net/) as it moves from the Kerguelen Islands to Antarctica and back again (Data from IMOS 2018[^1], provided as part of the `SOmap` package).
 
 ```{r get_track_data, message = FALSE, warning = FALSE}
 library(dplyr)
 library(ggplot2)
 
-data("ellie", package = "bsam")
-x <- ellie %>% dplyr::filter(id == "ct96-05-13")
+data("SOmap_data", package = "SOmap")
+x <- SOmap_data$mirounga_leonina %>% dplyr::filter(id == "ct96-05-13")
 with(x, plot(lon, lat))
 ```
 
 #### Fetching our environmental data
 
-Very commonly, we want to know about the environmental conditions at our points of interest. For the remote and vast Southern Ocean these data typically come from satellite or models. Some data centres provide extraction tools that will pull out a subset of data to suit your requirements, but often it makes more sense to cache entire data collections locally first and then work with them from there:
+Very commonly, we want to know about the environmental conditions at our points of interest. For the remote and vast Southern Ocean these data typically come from satellite or model sources. Some data centres provide extraction tools that will pull out a subset of data to suit your requirements, but often it makes more sense to cache entire data collections locally first and then work with them from there:
 
-- many analyses make use of data from a variety of providers (in which case there may not be dynamic extraction tools for all of them)
-- analyses might need to crunch through a whole collection of data in order to calculate appropriate statistics (temperature anomalies with respect to a long-term mean, for example)
-- different parts of the same data set are used in different analyses, in which case making one copy of the whole thing may be easier to manage than having different subsets for different projects
-- a common suite of data are routinely used by a local research community, in which case it makes more sense to keep a local copy for everyone to use, rather than multiple copies being downloaded by different individuals
+- many analyses make use of data from a variety of providers (in which case there may not be dynamic extraction tools for all of them),
+- analyses might need to crunch through a whole collection of data in order to calculate appropriate statistics (temperature anomalies with respect to a long-term mean, for example),
+- different parts of the same data set are used in different analyses, in which case making one copy of the whole thing may be easier to manage than having different subsets for different projects,
+- a common suite of data are routinely used by a local research community, in which case it makes more sense to keep a local copy for everyone to use, rather than multiple copies being downloaded by different individuals.
 
-In these cases, maintaining a local copy of a range of data from third-party providers can be extremely beneficial, especially if that collection is hosted with a fast connection to local compute resources (virtual machines or high-performance computational facilities).
+In these cases, maintaining local copies of a range of data from third-party providers can be extremely beneficial, especially if that collection is hosted with a fast connection to local compute resources (virtual machines or high-performance computational facilities).
 
 [bowerbird](https://github.com/AustralianAntarcticDivision/bowerbird) provides a framework for downloading data files to a local collection, and keeping it up to date. The companion [blueant](https://github.com/AustralianAntarcticDivision/blueant) package provides a suite of definitions for Southern Ocean and Antarctic data sources that can be used with `bowerbird`.
 
@@ -126,59 +126,68 @@ op[5] <- " [... output truncated]"
 for (oo in op[1:5]) cat(oo, "\n")
 ```
 
-Now we have local copies of those data files. The sync can be run daily so that the local collection is always up to date - it will only download new files, or files that have changed since the last download.
+Now we have local copies of those data files. The sync can be run daily so that the local collection is always up to date - it will only download new files, or files that have changed since the last download. For more information on `bowerbird`, see the [package vignette](https://ropensci.github.io/bowerbird/articles/bowerbird.html).
 
-Details of the files can be found in the `result` object, and those files could now be read with packages such as `raster`. However, we are collecting data from a range of sources, and so they will tend to be different in terms of their grids, resolutions, projections, and variable-naming conventions, which tends to complicate these operations. In the next section we'll look at the `raadtools` package, which provides a set of tools for doing common operations on these types of data.
+Details of the files can be found in the `result` object, and those files could now be read with packages such as `raster`. However, we are collecting data from a range of sources, and so they will be different in terms of their grids, resolutions, projections, and variable-naming conventions, which tends to complicate these operations. In the next section we'll look at the `raadtools` package, which provides a set of tools for doing common operations on these types of data.
 
 #### Using those environmental data: raadtools
 
-For Antarctic and Southern Ocean studies, it is very common to deal with satellite, model, or other environmental data. Such data are typically spatial or spatio-temporal in nature. `raadtools` is suite of functions that provide consistent access to a range of such data, and tools for working with them. It is designed to work with the `bowerbird`/`blueant` packages.
+For Antarctic and Southern Ocean studies, it is very common to deal with satellite, model, or other environmental data. Such data are typically spatial or spatio-temporal in nature. [`raadtools`](https://github.com/AustralianAntarcticDivision/raadtools) is suite of functions that provide consistent access to a range of such data, and tools for working with them. It is designed to work data collections maintained by the `bowerbird`/`blueant` packages.
+
+Load the package and tell it where our data collection has been stored:
 
 ```{r message = FALSE, warning = FALSE}
 library(raadtools)
-
-## tell raadtools where our data collection has been stored
 set_data_roots(my_data_dir)
 ```
 
-Define our spatial region of interest and extract the bathymetry data from this region, using the files we just downloaded:
+Define our spatial region of interest and extract the bathymetry data from this region, using the ETOPO2 files we just downloaded:
 
-```{r}
+```{r readbathy}
 roi <- round(c(range(x$lon), range(x$lat)) + c(-2, 2, -2, 2))
 bx <- readtopo("etopo2", xylim = roi)
 ```
 
 And now we can make a simple plot of our our track superimposed on the bathymetry:
 
-```{r}
+```{r plotbathy}
 plot(bx)
 lines(x$lon, x$lat)
 ```
 
 We can also extract the depth values along our track using the `extract()` function in `raadtools`:
 
-```{r}
+```{r extractdepth}
 x$depth <- extract(readtopo, x[, c("lon", "lat")], topo = "etopo2")
 ```
 
 Plot the histogram of depth values, showing that most of the track points are located in relatively shallow waters:
 
-```{r}
+```{r histbathy}
 ggplot(x, aes(depth)) + geom_histogram(bins = 100) + theme_bw()
 ```
 
 This type of extraction will also work with time-varying data --- for example, we can extract the sea-ice conditions along our track, based on each track point's location and time:
 
-```{r}
+```{r temp1, echo = FALSE}
+## cheaty hide warnings until tz warning bug is fixed in raadtools, see https://github.com/AustralianAntarcticDivision/raadtools/issues/72
+suppressWarnings(x$ice <- extract(readice, x[, c("lon", "lat", "date")]))
+## points outside the ice grid will have missing ice values, so fill them with zeros
+x$ice[is.na(x$ice)] <- 0
+```
+```{r extractice, eval = FALSE}
 x$ice <- extract(readice, x[, c("lon", "lat", "date")])
 ## points outside the ice grid will have missing ice values, so fill them with zeros
 x$ice[is.na(x$ice)] <- 0
 ggplot(x, aes(date, ice, colour = lat)) + geom_path() + theme_bw()
 ```
+```{r temp2, echo = FALSE}
+ggplot(x, aes(date, ice, colour = lat)) + geom_path() + theme_bw()
+```
 
 #### Mapping
 
-Creating maps is another very common requirement, and in the Southern Ocean brings a few challenges (e.g. dealing with the dateline when using polar-stereographic or similar projections). There are also spatial features that many users want to show (coastlines, oceanic fronts, extent of sea ice, place names, etc). The in-development `SOmap` package aims to help with this.
+Creating maps is another very common requirement, and in the Southern Ocean this brings a few challenges (e.g. dealing with the dateline when using polar-stereographic or similar circumpolar projections). There are also spatial features that many users want to show (coastlines, oceanic fronts, extent of sea ice, place names, etc). The in-development [`SOmap`](https://github.com/Maschette/SOmap) package aims to help with this.
 
 ```{r somap1}
 library(SOmap)
@@ -205,7 +214,7 @@ plot(xsp, col = "darkgreen", add = TRUE)
 
 #### Place names
 
-SCAR maintains a gazetteer of place names in the Antarctic and surrounding Southern Ocean[^2], which is available to R users via the `antanym` package:
+SCAR maintains a gazetteer of place names in the Antarctic and surrounding Southern Ocean[^2], which is available to R users via the [`antanym` package](https://ropensci.github.io/antanym/):
 
 ```{r antanym1}
 library(antanym)
@@ -224,19 +233,19 @@ How many place names do we have?
 nrow(xn)
 ```
 
-OK, we can't show all of these --- which ones should we show? Let's ask antanym for suggestions as to which names should be shown on this map:
+OK, we can't show all of these --- which ones would be best to show on this map? Let's ask antanym for suggestions:
 
 ```{r antanym2, fig.width = 8, fig.height = 8}
 xns <- an_suggest(xn, map_scale = 20e6, map_extent = c(-180, 180, -90, -40))
 
 ## transform to our map projection and take the first 10 names
-temp <- as_tibble(spTransform(xns, projection(Bathy))) %>% head(10)
+xns <- as_tibble(spTransform(xns, projection(Bathy))) %>% head(10)
 
 ## add them to the map
 SOmap()
 plot(xsp, col = "darkgreen", add = TRUE)
-with(temp, points(x = longitude, y= latitude, pch = 16))
-with(temp, text(x = longitude, y= latitude, labels = place_name, pos = 2 + 2*(longitude > 0)))
+with(xns, points(x = longitude, y= latitude, pch = 16))
+with(xns, text(x = longitude, y= latitude, labels = place_name, pos = 2 + 2*(longitude > 0)))
 ```
 
 ### References
