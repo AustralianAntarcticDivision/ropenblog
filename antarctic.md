@@ -8,7 +8,7 @@ Software development to support Antarctic data usage is growing, but still lags 
 
 Our initial efforts have focused on two things:
 
-1.  compiling a list of existing resources likely to be useful to the community: see the work-in-progress [task view](https://github.com/SCAR/antarctic-r-packages).
+1.  compiling a list of existing resources likely to be useful to the community: see the [task view](https://github.com/SCAR/antarctic-r-packages). This document outlines some relevant packages, including some that are in development.
 2.  improving core functionality centred around three key tasks that many researchers find problematic:
     -   getting hold of data. Environmental data are commonly needed, and often come from satellite, model, or similar sources (or large data collections),
     -   processing those data to suit particular study interests, such as subsetting or merging with field or other data,
@@ -18,9 +18,9 @@ A couple of packages have been [formally](https://github.com/ropensci/antanym) [
 
 ### Get involved
 
-Please get involved! Beyond the common rOpenSci channels ([Twitter feed](https://twitter.com/rOpenSci), [blog](https://ropensci.org/blog/), [discussion forum](https://discuss.ropensci.org/)):
+Please get involved! Beyond participating in the common rOpenSci channels ([Twitter feed](https://twitter.com/rOpenSci), [blog](https://ropensci.org/blog/), [discussion forum](https://discuss.ropensci.org/)):
 
--   contribute an Antarctic R package, or improve the documentation or code of an existing one. See the draft [Antarctic R package list](https://github.com/SCAR/antarctic-r-packages) as a starting point,
+-   contribute an Antarctic R package, or improve the documentation or code of an existing one. See the [task view](https://github.com/SCAR/antarctic-r-packages) as a starting point,
 
 -   contribute your Antarctic R knowledge, as a [code snippet](https://github.com/SCAR/rtools) or [tutorial](https://ropensci.org/tutorials/),
 
@@ -60,7 +60,11 @@ with(x, plot(lon, lat))
 
 #### Fetching our environmental data
 
-Very commonly, we want to know about the environmental conditions at our points of interest. For the remote and vast Southern Ocean these data typically come from satellite or model sources. Some data centres provide extraction tools that will pull out a subset of data to suit your requirements, but often it makes more sense to cache entire data collections locally first and then work with them from there:
+Very commonly, we want to know about the environmental conditions at our points of interest. For the remote and vast Southern Ocean these data typically come from satellite or model sources. Some data centres provide extraction tools that will pull out a subset of data to suit your requirements, but often it makes more sense to cache entire data collections locally first and then work with them from there.
+
+[bowerbird](https://github.com/AustralianAntarcticDivision/bowerbird) provides a framework for downloading data files to a local collection, and keeping it up to date. The companion [blueant](https://github.com/AustralianAntarcticDivision/blueant) package provides a suite of definitions for Southern Ocean and Antarctic data sources that can be used with `bowerbird`.
+
+Why might you do this, instead of just fetching subsets of data from data providers as required?
 
 -   many analyses make use of data from a variety of providers (in which case there may not be dynamic extraction tools for all of them),
 -   analyses might need to crunch through a whole collection of data in order to calculate appropriate statistics (temperature anomalies with respect to a long-term mean, for example),
@@ -68,8 +72,6 @@ Very commonly, we want to know about the environmental conditions at our points 
 -   a common suite of data are routinely used by a local research community, in which case it makes more sense to keep a local copy for everyone to use, rather than multiple copies being downloaded by different individuals.
 
 In these cases, maintaining local copies of a range of data from third-party providers can be extremely beneficial, especially if that collection is hosted with a fast connection to local compute resources (virtual machines or high-performance computational facilities).
-
-[bowerbird](https://github.com/AustralianAntarcticDivision/bowerbird) provides a framework for downloading data files to a local collection, and keeping it up to date. The companion [blueant](https://github.com/AustralianAntarcticDivision/blueant) package provides a suite of definitions for Southern Ocean and Antarctic data sources that can be used with `bowerbird`.
 
 Install the package if needed:
 
@@ -114,6 +116,14 @@ Load the package and tell it where our data collection has been stored:
 
 ``` r
 library(raadtools)
+```
+
+    ## global option 'raadfiles.data.roots' set:
+    ## '//aad.gov.au/files/AADC/Scientific_Data/Data/gridded_new/data
+    ##  //aad.gov.au/files/AADC/Scientific_Data/Data/gridded_new/data_local
+    ##  //aad.gov.au/files/AADC/Scientific_Data/Data/gridded_new/data_deprecated'
+
+``` r
 set_data_roots(my_data_dir)
 ```
 
@@ -199,6 +209,13 @@ SCAR maintains a gazetteer of place names in the Antarctic and surrounding South
 
 ``` r
 library(antanym)
+```
+
+    ## The Composite Gazetteer of Antarctica is made available under a CC-BY license.
+    ## If you use it, please cite it:
+    ## Composite Gazetteer of Antarctica, Scientific Committee on Antarctic Research. GCMD Metadata (http://gcmd.nasa.gov/records/SCAR_Gazetteer.html)
+
+``` r
 xn <- an_read(cache = "session", sp = TRUE)
 ```
 
