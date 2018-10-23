@@ -32,7 +32,7 @@ Please get involved! Beyond participating in the common rOpenSci channels ([Twit
 
 ### Demo
 
-First install some packages, if needed.
+A lightning trip through the land of `bowerbird`, `raadtools`, `SOmap`, and `antanym`. First install some packages, if needed.
 
 ``` r
 ## make sure we have the packages we need
