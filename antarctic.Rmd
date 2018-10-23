@@ -31,7 +31,7 @@ Our initial efforts have focused on two things:
     - processing those data to suit particular study interests, such as subsetting or merging with field or other data,
     - producing maps for exploratory analyses or publications.
 
-A couple of packages have been [formally](https://github.com/ropensci/antanym) [onboarded](https://github.com/ropensci/bowerbird) into ropensci, with others in development. Example usage of a few of these packages is demonstrated below.
+A couple of packages have been [formally](https://github.com/ropensci/antanym) [onboarded](https://github.com/ropensci/bowerbird) into rOpenSci, with others in development. Example usage of a few of these packages is demonstrated below.
 
 ### Get involved
 

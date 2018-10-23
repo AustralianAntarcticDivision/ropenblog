@@ -10,11 +10,11 @@ Our initial efforts have focused on two things:
 
 1.  compiling a list of existing resources likely to be useful to the community: see the [task view](https://github.com/SCAR/ropensci/tree/master/task_view). This document outlines some relevant packages, including some that are in development.
 2.  improving core functionality centred around three key tasks that many researchers find problematic:
-    -   getting hold of data. Environmental data are commonly needed, and often come from satellite, model, or similar sources (or large data collections),
+    -   getting hold of data. Environmental data are commonly needed, and often come from satellite, model, or similar sources,
     -   processing those data to suit particular study interests, such as subsetting or merging with field or other data,
     -   producing maps for exploratory analyses or publications.
 
-A couple of packages have been [formally](https://github.com/ropensci/antanym) [onboarded](https://github.com/ropensci/bowerbird) into ropensci, with others in development. Example usage of a few of these packages is demonstrated below.
+A couple of packages have been [formally](https://github.com/ropensci/antanym) [onboarded](https://github.com/ropensci/bowerbird) into rOpenSci, with others in development. Example usage of a few of these packages is demonstrated below.
 
 ### Get involved
 
