@@ -8,7 +8,7 @@ Software development to support Antarctic data usage is growing, but still lags 
 
 Our initial efforts have focused on two things:
 
-1.  compiling a list of existing resources likely to be useful to the community: see the [task view](https://github.com/SCAR/antarctic-r-packages). This document outlines some relevant packages, including some that are in development.
+1.  compiling a list of existing resources likely to be useful to the community: see the [task view](https://github.com/SCAR/ropensci/tree/master/task_view). This document outlines some relevant packages, including some that are in development.
 2.  improving core functionality centred around three key tasks that many researchers find problematic:
     -   getting hold of data. Environmental data are commonly needed, and often come from satellite, model, or similar sources (or large data collections),
     -   processing those data to suit particular study interests, such as subsetting or merging with field or other data,
@@ -20,7 +20,7 @@ A couple of packages have been [formally](https://github.com/ropensci/antanym) [
 
 Please get involved! Beyond participating in the common rOpenSci channels ([Twitter feed](https://twitter.com/rOpenSci), [blog](https://ropensci.org/blog/), [discussion forum](https://discuss.ropensci.org/)):
 
--   contribute an Antarctic R package, or improve the documentation or code of an existing one. See the [task view](https://github.com/SCAR/antarctic-r-packages) as a starting point,
+-   contribute an Antarctic R package, or improve the documentation or code of an existing one. See the [task view](https://github.com/SCAR/ropensci/tree/master/task_view) as a starting point,
 
 -   contribute your Antarctic R knowledge, as a [code snippet](https://github.com/SCAR/rtools) or [tutorial](https://ropensci.org/tutorials/),
 
