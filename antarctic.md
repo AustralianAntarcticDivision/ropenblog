@@ -10,7 +10,7 @@ Our initial efforts have focused on two things:
 
 1.  compiling a list of existing resources likely to be useful to the community: see the [task view](https://github.com/SCAR/ropensci/tree/master/task_view). This document outlines some relevant packages, including some that are in development.
 2.  improving core functionality centred around three key tasks that many researchers find problematic:
-    -   getting hold of data. Environmental data are commonly needed, and often come from satellite, model, or similar sources,
+    -   getting hold of data. The physical environment is important to a large cross-section of Antarctic science, and environmental data often come from satellite, model, or similar sources,
     -   processing those data to suit particular study interests, such as subsetting or merging with field or other data,
     -   producing maps for exploratory analyses or publications.
 
@@ -62,9 +62,9 @@ with(x, plot(lon, lat))
 
 Very commonly, we want to know about the environmental conditions at our points of interest. For the remote and vast Southern Ocean these data typically come from satellite or model sources. Some data centres provide extraction tools that will pull out a subset of data to suit your requirements, but often it makes more sense to cache entire data collections locally first and then work with them from there.
 
-[bowerbird](https://github.com/AustralianAntarcticDivision/bowerbird) provides a framework for downloading data files to a local collection, and keeping it up to date. The companion [blueant](https://github.com/AustralianAntarcticDivision/blueant) package provides a suite of definitions for Southern Ocean and Antarctic data sources that can be used with `bowerbird`.
+[bowerbird](https://github.com/AustralianAntarcticDivision/bowerbird) provides a framework for downloading data files to a local collection, and keeping it up to date. The companion [blueant](https://github.com/AustralianAntarcticDivision/blueant) package provides a suite of definitions for Southern Ocean and Antarctic data sources that can be used with `bowerbird`. It encompasses data such as sea ice, bathymetry and land topography, oceanography, and atmospheric reanalysis and weather predictions, from providers such as NASA, NOAA, Copernicus, NSIDC, and Ifremer.
 
-Why might you do this, instead of just fetching subsets of data from data providers as required?
+Why might you want to maintain local copies of entire data sets, instead of just fetching subsets of data from providers as needed?
 
 -   many analyses make use of data from a variety of providers (in which case there may not be dynamic extraction tools for all of them),
 -   analyses might need to crunch through a whole collection of data in order to calculate appropriate statistics (temperature anomalies with respect to a long-term mean, for example),
@@ -110,7 +110,7 @@ Details of the files can be found in the `result` object, and those files could 
 
 #### Using those environmental data: raadtools
 
-For Antarctic and Southern Ocean studies, it is very common to deal with satellite, model, or other environmental data. Such data are typically spatial or spatio-temporal in nature. [`raadtools`](https://github.com/AustralianAntarcticDivision/raadtools) is suite of functions that provide consistent access to a range of such data, and tools for working with them. It is designed to work data collections maintained by the `bowerbird`/`blueant` packages.
+[`raadtools`](https://github.com/AustralianAntarcticDivision/raadtools) is suite of functions that provide consistent access to a range of environmental and similar data, and tools for working with them. It is designed to work data collections maintained by the `bowerbird`/`blueant` packages.
 
 Load the package and tell it where our data collection has been stored:
 
