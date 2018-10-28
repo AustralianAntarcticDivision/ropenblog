@@ -40,7 +40,8 @@ req <- setdiff(c("dplyr", "ggplot2", "remotes"), installed.packages())
 if (length(req) > 0) install.packages(req)
 
 ## and some github packages
-req <- c("ropensci/antanym", "AustralianAntarcticDivision/blueant", "AustralianAntarcticDivision/raadtools", "Maschette/SOmap")
+req <- c("ropensci/antanym", "AustralianAntarcticDivision/blueant", "AustralianAntarcticDivision/raadtools",
+         "AustralianAntarcticDivision/SOmap")
 req <- setdiff(basename(req), installed.packages())
 if (length(req) > 0) remotes::install_github(req)
 ```
@@ -93,7 +94,8 @@ Download daily sea ice data (from 2013 only), and the ETOPO2 bathymetric data se
 ``` r
 library(blueant)
 src <- bind_rows(
-    sources("NSIDC SMMR-SSM/I Nasateam sea ice concentration", hemisphere = "south", time_resolutions = "day", years = 2013),
+    sources("NSIDC SMMR-SSM/I Nasateam sea ice concentration", hemisphere = "south", time_resolutions = "day",
+            years = 2013),
     sources("ETOPO2 bathymetry"))
 result <- bb_get(src, local_file_root = my_data_dir, clobber = 0, verbose = TRUE, confirm = NULL)
 ```
@@ -173,7 +175,7 @@ ggplot(x, aes(date, ice, colour = lat)) + geom_path() + theme_bw()
 
 #### Mapping
 
-Creating maps is another very common requirement, and in the Southern Ocean this brings a few challenges (e.g. dealing with the dateline when using polar-stereographic or similar circumpolar projections). There are also spatial features that many users want to show (coastlines, oceanic fronts, extent of sea ice, place names, etc). The in-development [`SOmap`](https://github.com/Maschette/SOmap) package aims to help with this.
+Creating maps is another very common requirement, and in the Southern Ocean this brings a few challenges (e.g. dealing with the dateline when using polar-stereographic or similar circumpolar projections). There are also spatial features that many users want to show (coastlines, oceanic fronts, extent of sea ice, place names, etc). The in-development [`SOmap`](https://github.com/AustralianAntarcticDivision/SOmap) package aims to help with this.
 
 ``` r
 library(SOmap)
