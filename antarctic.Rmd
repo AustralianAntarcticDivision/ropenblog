@@ -25,7 +25,7 @@ Starting in late 2017, the [Scientific Committee on Antarctic Research](https://
 
 Our initial efforts have focused on two things:
 
-1. compiling a list of existing resources likely to be useful to the community: see the [task view](https://github.com/SCAR/ropensci/tree/master/task_view). This document outlines some relevant packages, including some that are in development.
+1. compiling a list of existing resources likely to be useful to the community: see the [task view](https://github.com/SCAR/ropensci/tree/master/task_view). This document outlines some relevant packages, including some that are under active development.
 1. improving core functionality centred around three key tasks that many researchers find problematic:
     - getting hold of data. The physical environment is important to a large cross-section of Antarctic science, and environmental data often come from satellite, model, or similar sources,
     - processing those data to suit particular study interests, such as subsetting or merging with field or other data,
@@ -39,11 +39,11 @@ Please get involved! Beyond participating in the common rOpenSci channels ([Twit
 
 - contribute an Antarctic R package, or improve the documentation or code of an existing one. See the [task view](https://github.com/SCAR/ropensci/tree/master/task_view) as a starting point,
 
-- contribute your Antarctic R knowledge, as a [code snippet](https://github.com/SCAR/rtools) or [tutorial](https://ropensci.org/tutorials/),
+- contribute your Antarctic R knowledge (perhaps as a [use case](https://discuss.ropensci.org/c/usecases) if it's related to an rOpenSci package, or feel free to contact us to discuss an appropriate forum if not),
 
-- join the developer #antarctic slack channel,
+- join the developer #antarctic slack channel (best suited to more advanced users),
 
-- make [a suggestion](https://github.com/SCAR/ropensci/issues).
+- make [a suggestion](https://github.com/SCAR/ropensci/issues) --- perhaps for Antarctic-related functionality that you feel is missing from the current R ecosystem?
 
 ----
 
@@ -254,6 +254,10 @@ plot(xsp, col = "darkgreen", add = TRUE)
 with(xns, points(x = longitude, y= latitude, pch = 16))
 with(xns, text(x = longitude, y= latitude, labels = place_name, pos = 2 + 2*(longitude > 0)))
 ```
+
+### Next steps
+
+There is plenty more that these and other R packages can do for Antarctic and Southern Ocean science. See the package READMEs and vignettes for more examples, keep an eye out for future developments ... and get involved!
 
 ### References
 
