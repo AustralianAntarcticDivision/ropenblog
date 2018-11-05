@@ -2,7 +2,7 @@
 
 Collaboration and reproducibility are [fundamental to Antarctic and Southern Ocean science](https://doi.org/10.1038/d41586-018-05369-6), and the value of data to Antarctic science has long been promoted. The [Antarctic Treaty](https://www.ats.aq/e/ats.htm) (which came into force in 1961) included the provision that scientific observations and results from Antarctica should be openly shared. The high cost and difficulty of acquisition means that data tend to be re-used for different studies once collected. Further, there are many common data requirement themes (e.g. sea ice information is useful to a wide range of activities, from voyage planning through to ecosystem modelling). Support for Antarctic data management is well established. The SCAR-COMNAP Joint Committee on Antarctic Data Management was established in 1997 and remains active [as a SCAR Standing Commitee](https://www.scar.org/data-products/scadm/) today.
 
-Software development to support Antarctic data usage is growing, but still lags the available data, and some common tasks are still more difficult than we would like. Starting in late 2017, the [Scientific Committee on Antarctic Research](https://www.scar.org/) has been collaborating with rOpenSci to strengthen the Antarctic and Southern Ocean R/science communities. Our focus is on data and tasks that are common or even unique to Antarctic and Southern Ocean science, including supporting the development of R packages to meet Antarctic science needs, guides for R users and developers, active fora for open discussions, and strengthening connections with the broader science world.
+Software development to support Antarctic data usage is growing, but still lags behind the available data, and some common tasks are still more difficult than we would like. Starting in late 2017, the [Scientific Committee on Antarctic Research](https://www.scar.org/) has been collaborating with rOpenSci to strengthen the Antarctic and Southern Ocean R/science communities. Our focus is on data and tasks that are common or even unique to Antarctic and Southern Ocean science, including supporting the development of R packages to meet Antarctic science needs, guides for R users and developers, active fora for open discussions, and strengthening connections with the broader science world.
 
 ### First steps in building the community
 
@@ -18,15 +18,17 @@ A [couple](https://github.com/ropensci/antanym) of [packages](https://github.com
 
 ### Get involved
 
-Please get involved! Beyond participating in the common rOpenSci channels ([Twitter feed](https://twitter.com/rOpenSci), [blog](https://ropensci.org/blog/), [discussion forum](https://discuss.ropensci.org/)):
+Please get involved!
+
+-   contribute your Antarctic R knowledge, your Antarctic [use case](https://discuss.ropensci.org/c/usecases) for a package, or ask a question in the dedicated [Antarctic and Southern Ocean](https://discuss.ropensci.org/c/antarctic) category of rOpenSci's discussion forum,
+
+-   make [a suggestion](https://discuss.ropensci.org/c/antarctic) &mdash; perhaps for Antarctic-related functionality that you feel is missing from the current R ecosystem?
 
 -   contribute an Antarctic R package, or improve the documentation or code of an existing one. See the [task view](https://github.com/SCAR/ropensci/tree/master/task_view) as a starting point,
 
--   contribute your Antarctic R knowledge (perhaps as a [use case](https://discuss.ropensci.org/c/usecases) if it's related to an rOpenSci package, or feel free to contact us to discuss an appropriate forum if not),
+-   join the \#antarctic rOpenSci Slack channel for R users and developers &mdash; contact us at <antarctic@ropensci.org> for an invitation to join. Slack provides a less-public channel through which to communicate with members of the community or provide feedback,
 
--   join the developer \#antarctic slack channel (best suited to more advanced users),
-
--   make [a suggestion](https://github.com/SCAR/ropensci/issues) --- perhaps for Antarctic-related functionality that you feel is missing from the current R ecosystem?
+-   participate in the [broader rOpenSci community](https://ropensci.org/community/). Follow on [Twitter](https://twitter.com/rOpenSci), read the [blog](https://ropensci.org/blog/), and check out their ecosystem of [R packages](https://ropensci.org/packages/).
 
 ------------------------------------------------------------------------
 
@@ -46,7 +48,7 @@ req <- setdiff(basename(req), installed.packages())
 if (length(req) > 0) remotes::install_github(req)
 ```
 
-Let's say that we have some points of interest in the Southern Ocean --- perhaps a ship track, or some stations where we took marine samples, or as we'll use here, the [track of an elephant seal](http://www.meop.net/) as it moves from the Kerguelen Islands to Antarctica and back again (Data from IMOS 2018[1], provided as part of the `SOmap` package).
+Let's say that we have some points of interest in the Southern Ocean &mdash; perhaps a ship track, or some stations where we took marine samples, or as we'll use here, the [track of an elephant seal](http://www.meop.net/) as it moves from the Kerguelen Islands to Antarctica and back again (Data from IMOS 2018[1], provided as part of the `SOmap` package).
 
 ``` r
 library(dplyr)
@@ -162,7 +164,7 @@ ggplot(x, aes(depth)) + geom_histogram(bins = 100) + theme_bw()
 
 <img src="antarctic_files/figure-markdown_github/histbathy-1.png" style="display: block; margin: auto;" />
 
-This type of extraction will also work with time-varying data --- for example, we can extract the sea-ice conditions along our track, based on each track point's location and time:
+This type of extraction will also work with time-varying data &mdash; for example, we can extract the sea-ice conditions along our track, based on each track point's location and time:
 
 ``` r
 x$ice <- extract(readice, x[, c("lon", "lat", "date")])
@@ -235,7 +237,7 @@ nrow(xn)
 
     ## [1] 19742
 
-OK, we can't show all of these --- which ones would be best to show on this map? Let's ask antanym for suggestions:
+OK, we can't show all of these &mdash; which ones would be best to show on this map? Let's ask antanym for suggestions:
 
 ``` r
 xns <- an_suggest(xn, map_scale = 20e6, map_extent = c(-180, 180, -90, -40))
