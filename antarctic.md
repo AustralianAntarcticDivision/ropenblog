@@ -26,9 +26,9 @@ Please get involved!
 
 -   contribute an Antarctic R package, or improve the documentation or code of an existing one. See the [task view](https://github.com/SCAR/ropensci/tree/master/task_view) as a starting point,
 
--   join the \#antarctic rOpenSci Slack channel for R users and developers &mdash; contact us at <antarctic@ropensci.org> for an invitation to join. Slack provides a less-public channel through which to communicate with members of the community or provide feedback,
+-   join the \#antarctic rOpenSci Slack channel for R users and developers &mdash; contact us at <antarctic@ropensci.org> for an invitation to join. Slack is a great space in which to have conversations with the rOpenSci community, or to give us feedback in a less-public manner,
 
--   participate in the [broader rOpenSci community](https://ropensci.org/community/). Follow on [Twitter](https://twitter.com/rOpenSci), read the [blog](https://ropensci.org/blog/), and check out their ecosystem of [R packages](https://ropensci.org/packages/).
+-   participate in the [broader rOpenSci community](https://ropensci.org/community/). Follow on [Twitter](https://twitter.com/rOpenSci), read the [blog](https://ropensci.org/blog/), and check out the [ecosystem of R packages](https://ropensci.org/packages/).
 
 ------------------------------------------------------------------------
 
@@ -120,14 +120,6 @@ Load the package and tell it where our data collection has been stored:
 
 ``` r
 library(raadtools)
-```
-
-    ## global option 'raadfiles.data.roots' set:
-    ## '//aad.gov.au/files/AADC/Scientific_Data/Data/gridded_new/data
-    ##  //aad.gov.au/files/AADC/Scientific_Data/Data/gridded_new/data_local
-    ##  //aad.gov.au/files/AADC/Scientific_Data/Data/gridded_new/data_deprecated'
-
-``` r
 set_data_roots(my_data_dir)
 ```
 
