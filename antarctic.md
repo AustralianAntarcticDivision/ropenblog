@@ -30,6 +30,9 @@ Please get involved!
 
 -   participate in the [broader rOpenSci community](https://ropensci.org/community/). Follow on [Twitter](https://twitter.com/rOpenSci), read the [blog](https://ropensci.org/blog/), and check out the [ecosystem of R packages](https://ropensci.org/packages/).
 
+
+The primary contacts for this group are Ben Raymond, Sara Labrousse, Michael Sumner, and Jess Melbourne-Thomas. Contact us via antarctic@ropensci.org, or find us on Slack or Twitter.
+
 ------------------------------------------------------------------------
 
 ### Demo

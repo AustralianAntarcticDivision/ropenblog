@@ -1,9 +1,22 @@
 ---
 slug: "antarctic"
-title: DRAFT - The Antarctic/Southern Ocean rOpenSci community
-output:
-  md_document:
-    variant: markdown_github
+title: The Antarctic/Southern Ocean rOpenSci community
+authors:
+  - name: Ben Raymond and Michael Sumner on behalf of the community
+date: 2018-11-13
+categories: blog
+topicid: 1234
+tags:
+- r
+- community
+- Antarctic
+- Southern Ocean
+- SCAR
+- software
+- packages
+- geospatial
+- maps
+- climate-data
 ---
 
 ```{r chunkopts, eval = TRUE, echo = FALSE}
@@ -49,6 +62,8 @@ Please get involved!
 
 - participate in the [broader rOpenSci community](https://ropensci.org/community/). Follow on [Twitter](https://twitter.com/rOpenSci), read the [blog](https://ropensci.org/blog/), and check out the [ecosystem of R packages](https://ropensci.org/packages/).
 
+
+The primary contacts for this initiative are Ben Raymond, Sara Labrousse, Michael Sumner, and Jess Melbourne-Thomas. Contact us via antarctic@ropensci.org, or find us on Slack or Twitter.
 
 ----
 
@@ -240,14 +255,15 @@ cx$z[cx$z <= 0] <- NA_real_
 
 ## create a lagged version of the track that we can use to show a trailing "worm"
 tail_length <- 8
-ele_lagged <- ele
-for (li in seq_len(tail_length)) ele_lagged <- rbind(ele_lagged, ele %>% mutate(date = lead(date, li)))
+ele_lagged <- ele %>% mutate(lag_n = 0)
+for (li in seq_len(tail_length)) ele_lagged <- rbind(ele_lagged, ele %>% mutate(date = lead(date, li), lag_n = -li))
 ele_lagged <- ele_lagged %>% dplyr::filter(!is.na(date))
 
 g <- ggplot() + geom_raster(data = cx, aes(x, y, fill = z)) +
     scale_fill_distiller(palette = "Greys", guide = FALSE, na.value = "#FFFFFF00") +
     geom_sf(data = ice_edge, colour = "blue") +
-    geom_path(data = ele_lagged, aes(x, y), colour = "orange", size = 1) +
+    geom_path(data = ele_lagged, aes(x, y, alpha = lag_n), colour = "orange", size = 1) +
+    scale_alpha_continuous(guide = FALSE) +
     geom_path(data = ele, aes(x, y), colour = "orange", size = 2) +
     theme_void() + xlim(c(-4e6, 4e6)) + ylim(c(-4.75e6, 4.75e6)) +
     transition_time(date)
