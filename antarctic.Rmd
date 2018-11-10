@@ -1,4 +1,5 @@
 ---
+slug: "antarctic"
 title: DRAFT - The Antarctic/Southern Ocean rOpenSci community
 output:
   md_document:
@@ -6,7 +7,8 @@ output:
 ---
 
 ```{r chunkopts, eval = TRUE, echo = FALSE}
-knitr::opts_chunk$set(eval = TRUE, echo = TRUE, message = TRUE, warning = TRUE, tidy = FALSE, cache = FALSE, include = TRUE, dpi = 72, fig.width = 9, fig.height = 6, fig.align = "center", results = "markup")
+asset_path <- "img/blog-images/2018-11-13-antarctic/"
+knitr::opts_chunk$set(eval = TRUE, echo = TRUE, message = TRUE, warning = TRUE, tidy = FALSE, cache = FALSE, include = TRUE, dpi = 72, fig.width = 9, fig.height = 6, fig.align = "center", results = "markup", fig.path = asset_path)
 ```
 
 
@@ -62,7 +64,7 @@ if (length(req) > 0) install.packages(req)
 ## and some github packages
 req <- c("ropensci/antanym", "AustralianAntarcticDivision/blueant", "AustralianAntarcticDivision/raadtools",
          "AustralianAntarcticDivision/SOmap")
-req <- setdiff(basename(req), installed.packages())
+req <- req[!basename(req) %in% installed.packages()]
 if (length(req) > 0) remotes::install_github(req)
 ```
 
@@ -73,8 +75,8 @@ library(dplyr)
 library(ggplot2)
 
 data("SOmap_data", package = "SOmap")
-x <- SOmap_data$mirounga_leonina %>% dplyr::filter(id == "ct96-05-13")
-with(x, plot(lon, lat))
+ele <- SOmap_data$mirounga_leonina %>% dplyr::filter(id == "ct96-05-13")
+with(ele, plot(lon, lat))
 ```
 
 #### Fetching our environmental data
@@ -154,7 +156,7 @@ set_data_roots(my_data_dir)
 Define our spatial region of interest and extract the bathymetry data from this region, using the ETOPO2 files we just downloaded:
 
 ```{r readbathy}
-roi <- round(c(range(x$lon), range(x$lat)) + c(-2, 2, -2, 2))
+roi <- round(c(range(ele$lon), range(ele$lat)) + c(-2, 2, -2, 2))
 bx <- readtopo("etopo2", xylim = roi)
 ```
 
@@ -162,37 +164,94 @@ And now we can make a simple plot of our our track superimposed on the bathymetr
 
 ```{r plotbathy}
 plot(bx)
-lines(x$lon, x$lat)
+lines(ele$lon, ele$lat)
 ```
 
 We can also extract the depth values along our track using the `extract()` function in `raadtools`:
 
 ```{r extractdepth}
-x$depth <- extract(readtopo, x[, c("lon", "lat")], topo = "etopo2")
+ele$depth <- extract(readtopo, ele[, c("lon", "lat")], topo = "etopo2")
 ```
 
 Plot the histogram of depth values, showing that most of the track points are located in relatively shallow waters:
 
 ```{r histbathy}
-ggplot(x, aes(depth)) + geom_histogram(bins = 100) + theme_bw()
+ggplot(ele, aes(depth)) + geom_histogram(bins = 100) + theme_bw()
 ```
 
 This type of extraction will also work with time-varying data &mdash; for example, we can extract the sea-ice conditions along our track, based on each track point's location and time:
 
 ```{r temp1, echo = FALSE}
 ## cheaty hide warnings until tz warning bug is fixed in raadtools, see https://github.com/AustralianAntarcticDivision/raadtools/issues/72
-suppressWarnings(x$ice <- extract(readice, x[, c("lon", "lat", "date")]))
+suppressWarnings(ele$ice <- extract(readice, ele[, c("lon", "lat", "date")]))
 ## points outside the ice grid will have missing ice values, so fill them with zeros
-x$ice[is.na(x$ice)] <- 0
+ele$ice[is.na(ele$ice)] <- 0
 ```
 ```{r extractice, eval = FALSE}
-x$ice <- extract(readice, x[, c("lon", "lat", "date")])
+ele$ice <- extract(readice, ele[, c("lon", "lat", "date")])
 ## points outside the ice grid will have missing ice values, so fill them with zeros
-x$ice[is.na(x$ice)] <- 0
-ggplot(x, aes(date, ice, colour = lat)) + geom_path() + theme_bw()
+ele$ice[is.na(ele$ice)] <- 0
+ggplot(ele, aes(date, ice, colour = lat)) + geom_path() + theme_bw()
 ```
 ```{r temp2, echo = FALSE}
-ggplot(x, aes(date, ice, colour = lat)) + geom_path() + theme_bw()
+ggplot(ele, aes(date, ice, colour = lat)) + geom_path() + theme_bw()
+```
+
+Or a fancy animated plot, using `gganimate` (code not shown for brevity, but you can find it in the article source). The hypnotic blue line shows the edge of the sea ice as it varies from day to day:
+
+```{r plotanim, echo = FALSE, message = FALSE, warning = FALSE, cache = TRUE}
+library(SOmap)
+library(gganimate) ## remotes::install_github("thomasp85/gganimate")
+require(transformr) ## remotes::install_github("thomasp85/transformr")
+require(sf)
+require(rgdal)
+require(rgeos)
+
+## use a rotated polar projection
+polar_proj_rot <- "+proj=stere +lat_0=-90 +lat_ts=-71 +lon_0=90 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0"
+ele[c("x", "y")] <- rgdal::project(as.matrix(ele[c("lon", "lat")]), polar_proj_rot)
+
+## get sea ice data, one raster per day
+ice_raster <- readice(sort(unique(as.Date(ele$date))))
+
+## rotate sea ice rasters
+tm <- getZ(ice_raster)
+ice_raster <- projectRaster(ice_raster, raster(extent(extent(ice_raster)[c(3, 4, 1, 2)]), nrows = ncol(ice_raster), ncols = nrow(ice_raster), crs = polar_proj_rot))
+ice_raster <- setZ(ice_raster, tm)
+
+## convert each sea ice raster to lines representing the edges of the ice
+## 15% is the standard "ice edge" threshold
+contour_raster_sf <- function(x, level = 15, date = as.POSIXct(NA, tz = "UTC")) {
+  raster::rasterToContour(x, level = level, maxpixels = prod(dim(x[[1]]))) %>%
+    sf::st_as_sf() %>% dplyr::mutate(date = date)
+}
+ice_edge <- vector("list", nlayers(ice_raster))
+for (i in seq_along(ice_edge)) {
+  ice_edge[[i]] <- contour_raster_sf(ice_raster[[i]], date = getZ(ice_raster)[i])
+}
+ice_edge <- sf::st_cast(do.call(rbind, ice_edge), "MULTILINESTRING")
+
+## use elevation data from ETOPO2 to show the land masses
+## read it and reproject from long-lat to our polar projection
+cx <- projectRaster(readtopo("etopo2", xylim = c(-180, 180, -90, -40)),
+                    raster(extent(c(-4e6, 4e6, -5e6, 5e6)), nrows = 400, ncols = 400, crs = polar_proj_rot))
+cx <- as.data.frame(cx, xy = TRUE)
+cx$z[cx$z <= 0] <- NA_real_
+
+## create a lagged version of the track that we can use to show a trailing "worm"
+tail_length <- 8
+ele_lagged <- ele
+for (li in seq_len(tail_length)) ele_lagged <- rbind(ele_lagged, ele %>% mutate(date = lead(date, li)))
+ele_lagged <- ele_lagged %>% dplyr::filter(!is.na(date))
+
+g <- ggplot() + geom_raster(data = cx, aes(x, y, fill = z)) +
+    scale_fill_distiller(palette = "Greys", guide = FALSE, na.value = "#FFFFFF00") +
+    geom_sf(data = ice_edge, colour = "blue") +
+    geom_path(data = ele_lagged, aes(x, y), colour = "orange", size = 1) +
+    geom_path(data = ele, aes(x, y), colour = "orange", size = 2) +
+    theme_void() + xlim(c(-4e6, 4e6)) + ylim(c(-4.75e6, 4.75e6)) +
+    transition_time(date)
+animate(g)
 ```
 
 #### Mapping
@@ -201,7 +260,7 @@ Creating maps is another very common requirement, and in the Southern Ocean this
 
 ```{r somap1}
 library(SOmap)
-SOauto_map(x$lon, x$lat, mask = FALSE)
+SOauto_map(ele$lon, ele$lat, mask = FALSE)
 ```
 
 Or a full-hemisphere map:
@@ -209,17 +268,17 @@ Or a full-hemisphere map:
 ## first transform our track to polar-stereographic coordinates
 library(sp)
 library(raster)
-xsp <- x
-coordinates(xsp) <- c("lon", "lat")
-projection(xsp) <- "+proj=longlat +ellps=WGS84"
-xsp <- spTransform(xsp, CRS("+proj=stere +lat_0=-90 +lat_ts=-71 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0"))
+ele_sp <- ele
+coordinates(ele_sp) <- c("lon", "lat")
+projection(ele_sp) <- "+proj=longlat +ellps=WGS84"
+ele_sp <- spTransform(ele_sp, CRS("+proj=stere +lat_0=-90 +lat_ts=-71 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0"))
 
 ## plot the base map with ocean fronts shown
 SOmap(fronts = TRUE)
 ## add current marine protected areas
 SOmanagement(MPA = TRUE, mpacol = "darkblue")
 ## add our track
-plot(xsp, col = "darkgreen", add = TRUE)
+plot(ele_sp, col = "darkgreen", add = TRUE)
 ```
 
 #### Place names
@@ -253,7 +312,7 @@ xns <- as_tibble(spTransform(xns, projection(Bathy))) %>% head(10)
 
 ## add them to the map
 SOmap()
-plot(xsp, col = "darkgreen", add = TRUE)
+plot(ele_sp, col = "darkgreen", add = TRUE)
 with(xns, points(x = longitude, y= latitude, pch = 16))
 with(xns, text(x = longitude, y= latitude, labels = place_name, pos = 2 + 2*(longitude > 0)))
 ```

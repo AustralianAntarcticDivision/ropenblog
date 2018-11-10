@@ -22,11 +22,11 @@ Please get involved!
 
 -   contribute your Antarctic R knowledge, your Antarctic [use case](https://discuss.ropensci.org/c/usecases) for a package, or ask a question in the dedicated [Antarctic and Southern Ocean](https://discuss.ropensci.org/c/antarctic) category of rOpenSci's discussion forum,
 
--   make [a suggestion](https://discuss.ropensci.org/c/antarctic) &mdash; perhaps for Antarctic-related functionality that you feel is missing from the current R ecosystem?
+-   make [a suggestion](https://discuss.ropensci.org/c/antarctic) — perhaps for Antarctic-related functionality that you feel is missing from the current R ecosystem?
 
 -   contribute an Antarctic R package, or improve the documentation or code of an existing one. See the [task view](https://github.com/SCAR/ropensci/tree/master/task_view) as a starting point,
 
--   join the \#antarctic rOpenSci Slack channel for R users and developers &mdash; contact us at <antarctic@ropensci.org> for an invitation to join. Slack is a great space in which to have conversations with the rOpenSci community, or to give us feedback in a less-public manner,
+-   join the \#antarctic rOpenSci Slack channel for R users and developers — contact us at <antarctic@ropensci.org> for an invitation to join. Slack is a great space in which to have conversations with the rOpenSci community, or to give us feedback in a less-public manner,
 
 -   participate in the [broader rOpenSci community](https://ropensci.org/community/). Follow on [Twitter](https://twitter.com/rOpenSci), read the [blog](https://ropensci.org/blog/), and check out the [ecosystem of R packages](https://ropensci.org/packages/).
 
@@ -44,22 +44,22 @@ if (length(req) > 0) install.packages(req)
 ## and some github packages
 req <- c("ropensci/antanym", "AustralianAntarcticDivision/blueant", "AustralianAntarcticDivision/raadtools",
          "AustralianAntarcticDivision/SOmap")
-req <- setdiff(basename(req), installed.packages())
+req <- req[!basename(req) %in% installed.packages()]
 if (length(req) > 0) remotes::install_github(req)
 ```
 
-Let's say that we have some points of interest in the Southern Ocean &mdash; perhaps a ship track, or some stations where we took marine samples, or as we'll use here, the [track of an elephant seal](http://www.meop.net/) as it moves from the Kerguelen Islands to Antarctica and back again (Data from IMOS 2018[1], provided as part of the `SOmap` package).
+Let's say that we have some points of interest in the Southern Ocean — perhaps a ship track, or some stations where we took marine samples, or as we'll use here, the [track of an elephant seal](http://www.meop.net/) as it moves from the Kerguelen Islands to Antarctica and back again (Data from IMOS 2018[1], provided as part of the `SOmap` package).
 
 ``` r
 library(dplyr)
 library(ggplot2)
 
 data("SOmap_data", package = "SOmap")
-x <- SOmap_data$mirounga_leonina %>% dplyr::filter(id == "ct96-05-13")
-with(x, plot(lon, lat))
+ele <- SOmap_data$mirounga_leonina %>% dplyr::filter(id == "ct96-05-13")
+with(ele, plot(lon, lat))
 ```
 
-<img src="antarctic_files/figure-markdown_github/get_track_data-1.png" style="display: block; margin: auto;" />
+<img src="img/blog-images/2018-11-13-antarctic/get_track_data-1.png" style="display: block; margin: auto;" />
 
 #### Fetching our environmental data
 
@@ -103,7 +103,7 @@ result <- bb_get(src, local_file_root = my_data_dir, clobber = 0, verbose = TRUE
 ```
 
     ##  
-    ## Fri Sep 14 01:24:19 2018 
+    ## Sat Nov 10 01:00:48 2018 
     ## Synchronizing dataset: NSIDC SMMR-SSM/I Nasateam sea ice concentration 
     ##  
     ##  [... output truncated]
@@ -129,7 +129,7 @@ set_data_roots(my_data_dir)
 Define our spatial region of interest and extract the bathymetry data from this region, using the ETOPO2 files we just downloaded:
 
 ``` r
-roi <- round(c(range(x$lon), range(x$lat)) + c(-2, 2, -2, 2))
+roi <- round(c(range(ele$lon), range(ele$lat)) + c(-2, 2, -2, 2))
 bx <- readtopo("etopo2", xylim = roi)
 ```
 
@@ -137,35 +137,41 @@ And now we can make a simple plot of our our track superimposed on the bathymetr
 
 ``` r
 plot(bx)
-lines(x$lon, x$lat)
+lines(ele$lon, ele$lat)
 ```
 
-<img src="antarctic_files/figure-markdown_github/plotbathy-1.png" style="display: block; margin: auto;" />
+<img src="img/blog-images/2018-11-13-antarctic/plotbathy-1.png" style="display: block; margin: auto;" />
 
 We can also extract the depth values along our track using the `extract()` function in `raadtools`:
 
 ``` r
-x$depth <- extract(readtopo, x[, c("lon", "lat")], topo = "etopo2")
+ele$depth <- extract(readtopo, ele[, c("lon", "lat")], topo = "etopo2")
 ```
+
+    ## Raad file cache is up to date as at 2018-11-10 12:01:27 (1015 files listed)
 
 Plot the histogram of depth values, showing that most of the track points are located in relatively shallow waters:
 
 ``` r
-ggplot(x, aes(depth)) + geom_histogram(bins = 100) + theme_bw()
+ggplot(ele, aes(depth)) + geom_histogram(bins = 100) + theme_bw()
 ```
 
-<img src="antarctic_files/figure-markdown_github/histbathy-1.png" style="display: block; margin: auto;" />
+<img src="img/blog-images/2018-11-13-antarctic/histbathy-1.png" style="display: block; margin: auto;" />
 
-This type of extraction will also work with time-varying data &mdash; for example, we can extract the sea-ice conditions along our track, based on each track point's location and time:
+This type of extraction will also work with time-varying data — for example, we can extract the sea-ice conditions along our track, based on each track point's location and time:
 
 ``` r
-x$ice <- extract(readice, x[, c("lon", "lat", "date")])
+ele$ice <- extract(readice, ele[, c("lon", "lat", "date")])
 ## points outside the ice grid will have missing ice values, so fill them with zeros
-x$ice[is.na(x$ice)] <- 0
-ggplot(x, aes(date, ice, colour = lat)) + geom_path() + theme_bw()
+ele$ice[is.na(ele$ice)] <- 0
+ggplot(ele, aes(date, ice, colour = lat)) + geom_path() + theme_bw()
 ```
 
-<img src="antarctic_files/figure-markdown_github/temp2-1.png" style="display: block; margin: auto;" />
+<img src="img/blog-images/2018-11-13-antarctic/temp2-1.png" style="display: block; margin: auto;" />
+
+Or a fancy animated plot, using `gganimate` (code not shown for brevity, but you can find it in the article source). The hypnotic blue line shows the edge of the sea ice as it varies from day to day:
+
+<img src="img/blog-images/2018-11-13-antarctic/plotanim-1.gif" style="display: block; margin: auto;" />
 
 #### Mapping
 
@@ -173,10 +179,10 @@ Creating maps is another very common requirement, and in the Southern Ocean this
 
 ``` r
 library(SOmap)
-SOauto_map(x$lon, x$lat, mask = FALSE)
+SOauto_map(ele$lon, ele$lat, mask = FALSE)
 ```
 
-<img src="antarctic_files/figure-markdown_github/somap1-1.png" style="display: block; margin: auto;" />
+<img src="img/blog-images/2018-11-13-antarctic/somap1-1.png" style="display: block; margin: auto;" />
 
 Or a full-hemisphere map:
 
@@ -184,20 +190,20 @@ Or a full-hemisphere map:
 ## first transform our track to polar-stereographic coordinates
 library(sp)
 library(raster)
-xsp <- x
-coordinates(xsp) <- c("lon", "lat")
-projection(xsp) <- "+proj=longlat +ellps=WGS84"
-xsp <- spTransform(xsp, CRS("+proj=stere +lat_0=-90 +lat_ts=-71 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0"))
+ele_sp <- ele
+coordinates(ele_sp) <- c("lon", "lat")
+projection(ele_sp) <- "+proj=longlat +ellps=WGS84"
+ele_sp <- spTransform(ele_sp, CRS("+proj=stere +lat_0=-90 +lat_ts=-71 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0"))
 
 ## plot the base map with ocean fronts shown
 SOmap(fronts = TRUE)
 ## add current marine protected areas
 SOmanagement(MPA = TRUE, mpacol = "darkblue")
 ## add our track
-plot(xsp, col = "darkgreen", add = TRUE)
+plot(ele_sp, col = "darkgreen", add = TRUE)
 ```
 
-<img src="antarctic_files/figure-markdown_github/somap2-1.png" style="display: block; margin: auto;" />
+<img src="img/blog-images/2018-11-13-antarctic/somap2-1.png" style="display: block; margin: auto;" />
 
 #### Place names
 
@@ -229,7 +235,7 @@ nrow(xn)
 
     ## [1] 19742
 
-OK, we can't show all of these &mdash; which ones would be best to show on this map? Let's ask antanym for suggestions:
+OK, we can't show all of these — which ones would be best to show on this map? Let's ask antanym for suggestions:
 
 ``` r
 xns <- an_suggest(xn, map_scale = 20e6, map_extent = c(-180, 180, -90, -40))
@@ -239,12 +245,12 @@ xns <- as_tibble(spTransform(xns, projection(Bathy))) %>% head(10)
 
 ## add them to the map
 SOmap()
-plot(xsp, col = "darkgreen", add = TRUE)
+plot(ele_sp, col = "darkgreen", add = TRUE)
 with(xns, points(x = longitude, y= latitude, pch = 16))
 with(xns, text(x = longitude, y= latitude, labels = place_name, pos = 2 + 2*(longitude > 0)))
 ```
 
-<img src="antarctic_files/figure-markdown_github/antanym2-1.png" style="display: block; margin: auto;" />
+<img src="img/blog-images/2018-11-13-antarctic/antanym2-1.png" style="display: block; margin: auto;" />
 
 ### Next steps
 
