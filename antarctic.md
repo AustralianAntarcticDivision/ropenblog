@@ -1,3 +1,28 @@
+---
+slug: "antarctic"
+title: The Antarctic/Southern Ocean rOpenSci community
+authors:
+  - name: Ben Raymond and Michael Sumner on behalf of the community
+date: 2018-11-13
+categories: blog
+topicid: 1234
+tags:
+- r
+- community
+- Antarctic
+- Southern Ocean
+- SCAR
+- software
+- packages
+- geospatial
+- maps
+- climate-data
+output:
+  md_document:
+    variant: markdown_github
+    preserve_yaml: true
+---
+
 ### Antarctic/Southern Ocean science and rOpenSci
 
 Collaboration and reproducibility are [fundamental to Antarctic and Southern Ocean science](https://doi.org/10.1038/d41586-018-05369-6), and the value of data to Antarctic science has long been promoted. The [Antarctic Treaty](https://www.ats.aq/e/ats.htm) (which came into force in 1961) included the provision that scientific observations and results from Antarctica should be openly shared. The high cost and difficulty of acquisition means that data tend to be re-used for different studies once collected. Further, there are many common data requirement themes (e.g. sea ice information is useful to a wide range of activities, from voyage planning through to ecosystem modelling). Support for Antarctic data management is well established. The SCAR-COMNAP Joint Committee on Antarctic Data Management was established in 1997 and remains active [as a SCAR Standing Commitee](https://www.scar.org/data-products/scadm/) today.
@@ -30,8 +55,7 @@ Please get involved!
 
 -   participate in the [broader rOpenSci community](https://ropensci.org/community/). Follow on [Twitter](https://twitter.com/rOpenSci), read the [blog](https://ropensci.org/blog/), and check out the [ecosystem of R packages](https://ropensci.org/packages/).
 
-
-The primary contacts for this group are Ben Raymond, Sara Labrousse, Michael Sumner, and Jess Melbourne-Thomas. Contact us via antarctic@ropensci.org, or find us on Slack or Twitter.
+The primary contacts for this initiative are Ben Raymond, Sara Labrousse, Michael Sumner, and Jess Melbourne-Thomas. Contact us via <antarctic@ropensci.org>, or find us on Slack or Twitter.
 
 ------------------------------------------------------------------------
 
@@ -151,7 +175,7 @@ We can also extract the depth values along our track using the `extract()` funct
 ele$depth <- extract(readtopo, ele[, c("lon", "lat")], topo = "etopo2")
 ```
 
-    ## Raad file cache is up to date as at 2018-11-10 12:01:27 (1015 files listed)
+    ## Raad file cache is up to date as at 2018-11-10 16:02:56 (1015 files listed)
 
 Plot the histogram of depth values, showing that most of the track points are located in relatively shallow waters:
 

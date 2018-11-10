@@ -17,6 +17,10 @@ tags:
 - geospatial
 - maps
 - climate-data
+output:
+  md_document:
+    variant: markdown_github
+    preserve_yaml: true
 ---
 
 ```{r chunkopts, eval = TRUE, echo = FALSE}
