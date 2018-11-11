@@ -55,7 +55,7 @@ Please get involved!
 
 -   participate in the [broader rOpenSci community](https://ropensci.org/community/). Follow on [Twitter](https://twitter.com/rOpenSci), read the [blog](https://ropensci.org/blog/), and check out the [ecosystem of R packages](https://ropensci.org/packages/).
 
-The primary contacts for this initiative are Ben Raymond, Sara Labrousse, Michael Sumner, and Jess Melbourne-Thomas. Contact us via <antarctic@ropensci.org>, or find us on Slack or Twitter.
+The administrative contacts for this initiative are Ben Raymond, Sara Labrousse, Michael Sumner, and Jess Melbourne-Thomas. Contact us via <antarctic@ropensci.org>, or find us on Slack or Twitter.
 
 ------------------------------------------------------------------------
 
@@ -150,9 +150,6 @@ library(raadtools)
 set_data_roots(my_data_dir)
 ```
 
-    ## global option 'raadfiles.data.roots' set:
-    ## 'c:/temp/data'
-
 Define our spatial region of interest and extract the bathymetry data from this region, using the ETOPO2 files we just downloaded:
 
 ``` r
@@ -175,8 +172,6 @@ We can also extract the depth values along our track using the `extract()` funct
 ele$depth <- extract(readtopo, ele[, c("lon", "lat")], topo = "etopo2")
 ```
 
-    ## Raad file cache is up to date as at 2018-11-10 16:02:56 (1015 files listed)
-
 Plot the histogram of depth values, showing that most of the track points are located in relatively shallow waters:
 
 ``` r
@@ -196,7 +191,7 @@ ggplot(ele, aes(date, ice, colour = lat)) + geom_path() + theme_bw()
 
 <img src="img/blog-images/2018-11-13-antarctic/temp2-1.png" style="display: block; margin: auto;" />
 
-Or a fancy animated plot, using `gganimate` (code not shown for brevity, but you can find it in the article source). The hypnotic blue line shows the edge of the sea ice as it varies from day to day:
+Or a fancy animated plot, using `gganimate` (code not shown for brevity, but you can find it in the article source). The hypnotic blue line shows the edge of the sea ice as it grows over the winter season:
 
 <img src="img/blog-images/2018-11-13-antarctic/plotanim-1.gif" style="display: block; margin: auto;" />
 

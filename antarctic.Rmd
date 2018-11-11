@@ -67,7 +67,7 @@ Please get involved!
 - participate in the [broader rOpenSci community](https://ropensci.org/community/). Follow on [Twitter](https://twitter.com/rOpenSci), read the [blog](https://ropensci.org/blog/), and check out the [ecosystem of R packages](https://ropensci.org/packages/).
 
 
-The primary contacts for this initiative are Ben Raymond, Sara Labrousse, Michael Sumner, and Jess Melbourne-Thomas. Contact us via antarctic@ropensci.org, or find us on Slack or Twitter.
+The administrative contacts for this initiative are Ben Raymond, Sara Labrousse, Michael Sumner, and Jess Melbourne-Thomas. Contact us via antarctic@ropensci.org, or find us on Slack or Twitter.
 
 ----
 
@@ -216,7 +216,7 @@ ggplot(ele, aes(date, ice, colour = lat)) + geom_path() + theme_bw()
 ggplot(ele, aes(date, ice, colour = lat)) + geom_path() + theme_bw()
 ```
 
-Or a fancy animated plot, using `gganimate` (code not shown for brevity, but you can find it in the article source). The hypnotic blue line shows the edge of the sea ice as it varies from day to day:
+Or a fancy animated plot, using `gganimate` (code not shown for brevity, but you can find it in the article source). The hypnotic blue line shows the edge of the sea ice as it grows over the winter season:
 
 ```{r plotanim, echo = FALSE, message = FALSE, warning = FALSE, cache = TRUE}
 library(SOmap)
